@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Max Kravchenko](https://up.htmlacademy.ru/javascript/14/user/544023).
-* Наставник: `Неизвестно`.
+* Наставник: Сам себе наставник :sweat: :disappointed: :worried: :muscle: :cat:.
 
 ---
 
