@@ -128,14 +128,14 @@ var setupBigPicture = function (photo) {
   bigPicture.querySelector('.comments-count').textContent = photo.comments.length;
 };
 
-// // Удаляем старые комментарии
-// var removeOldComments = function () {
-//   var pictureComments = bigPicture.querySelector('.social__comments');
-//   var removedComments = bigPicture.querySelectorAll('.social__comment');
-//   removedComments.forEach(function (oldcomment) {
-//     pictureComments.removeChild(oldcomment);
-//   });
-// };
+// Удаляем старые комментарии
+var removeOldComments = function () {
+  var pictureComments = bigPicture.querySelector('.social__comments');
+  var removedComments = bigPicture.querySelectorAll('.social__comment');
+  removedComments.forEach(function (oldcomment) {
+    pictureComments.removeChild(oldcomment);
+  });
+};
 
 /**
  * Добавляем комментарии
@@ -178,7 +178,7 @@ var hideCommentsElements = function () {
  */
 var renderBigPicture = function () {
   setupBigPicture(PhotosArray[0]);
-  // removeOldComments();
+  removeOldComments();
   addComments(PhotosArray[0]);
   hideCommentsElements();
 };
