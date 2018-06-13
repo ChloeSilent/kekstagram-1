@@ -41,10 +41,18 @@ var getRandomNum = function (min, max) {
   return rand;
 };
 
+/**
+ * Вспомогательная функция для сортировки массива в произвольном порядке
+ * @return {integer} - псевдослучайное число из диапазона [0, 1), то есть, от 0 (включительно) до 1 (но не включая 1)
+ */
 var compareRandom = function () {
   return Math.random() - 0.5;
 };
 
+/**
+ * Генерируем комментарии случайным образом, для каждого комментария берем 1 или 2 строки из массива COMMENTS
+ * @return {Array} - массив с одним или двумя комментариями
+ */
 var generateComment = function () {
   var commentsCopy = COMMENTS.slice();
   commentsCopy.sort(compareRandom);
@@ -54,6 +62,10 @@ var generateComment = function () {
   return commentsSmallCopy;
 };
 
+/**
+ * Создаем обьект через функцию конструктор
+ * @param {integer} n - текущий номер обьекта
+ */
 var PhotoDescription = function (n) {
   this.url = 'photos/' + (n + 1) + '.jpg';
   this.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
@@ -61,6 +73,12 @@ var PhotoDescription = function (n) {
   this.description = DESCRIPTION[getRandomNum(0, DESCRIPTION.length)];
 };
 
+/**
+ * Создаем массив оденотипных обьектов
+ * @param {Object} ObjectSample - обьект-прототип, на основе которого будут сгенерированы остальные обьекты
+ * @param {integer} count - количество обьектов для генерации
+ * @return {Array} PhotosArray - массив из n-ого кол-ва сгенерированных обьектов
+ */
 var createArrayOfPhoto = function (ObjectSample, count) {
   for (var i = 0; i < count; i++) {
     PhotosArray.push(new ObjectSample(i));
@@ -68,6 +86,11 @@ var createArrayOfPhoto = function (ObjectSample, count) {
   return PhotosArray;
 };
 
+/**
+ * Cоздаем DOM-элементы, заполняем их данными
+ * @param {Object} photo - обьект для изменения данных
+ * @return {DOM} pictureElement - нужный нам шаблон с измененными данными
+ */
 var createPictureElements = function (photo) {
   var pictureElement = picturesTemplate.cloneNode(true);
 
@@ -78,9 +101,14 @@ var createPictureElements = function (photo) {
   return pictureElement;
 };
 
-var insertElements = function (data, parentNode) {
+/**
+ * Отрисовываем сгенерированные DOM-элементы на странице
+ * @param {Array} arrayOfObjects - массив из нужного кол-ва обьектов
+ * @param {DOM} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
+*/
+var insertElements = function (arrayOfObjects, parentNode) {
   var fragment = document.createDocumentFragment();
-  data.forEach(function (element) {
+  arrayOfObjects.forEach(function (element) {
     fragment.appendChild(createPictureElements(element));
   });
 
@@ -88,8 +116,10 @@ var insertElements = function (data, parentNode) {
 };
 
 // работаем с фотками
-
-// разворачиваем полную версию фотографии с комментариями и описанием
+/**
+ * Разворачиваем полную версию фотографии с комментариями и описанием
+ * @param {Object} photo - обьект, на основе которого будут изменяться данные
+ */
 var setupBigPicture = function (photo) {
   bigPicture.classList.remove('hidden'); // показываем большое фото
   bigPicture.querySelector('.big-picture__img').src = photo.url;
@@ -107,9 +137,12 @@ var setupBigPicture = function (photo) {
 //   });
 // };
 
-// добавляем комментарии
-var addComments = function (data) {
-  data.comments.forEach(function (comment) {
+/**
+ * Добавляем комментарии
+ * @param {Object} objectFromArray - любой обьект из сгенерированного массива
+ */
+var addComments = function (objectFromArray) {
+  objectFromArray.comments.forEach(function (comment) {
     var pictureComments = bigPicture.querySelector('.social__comments');
 
     var pictureComment = document.createElement('li');
@@ -131,19 +164,26 @@ var addComments = function (data) {
   });
 };
 
+/**
+ * Прячем блок счётчика комментариев и блок загрузки новых комментариев
+ */
 var hideCommentsElements = function () {
   var social = bigPicture.querySelector('.social');
   social.querySelector('.social__loadmore').classList.add('visually-hidden');
   social.querySelector('.social__comment-count').classList.add('visually-hidden');
 };
 
-var renderBigPicture = function (data) {
+/**
+ * Отрисовываем полную версию фотографии с комментариями
+ */
+var renderBigPicture = function () {
   setupBigPicture(PhotosArray[0]);
   // removeOldComments();
   addComments(PhotosArray[0]);
   hideCommentsElements();
 };
 
-var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS);
-insertElements(readyPhotos, picturesList);
-renderBigPicture(readyPhotos);
+// вызываем главные функции
+var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва обьектов
+insertElements(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
+renderBigPicture(); // Отрисовываем большую фотографию с комментариями и описанием
