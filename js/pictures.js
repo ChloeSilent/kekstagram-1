@@ -5,8 +5,6 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 var AVATARS_MAX = 6;
 
-var PhotosArray = []; // массив для описания фоток
-
 var COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -33,7 +31,7 @@ var bigPicture = document.querySelector('.big-picture');
  * Функция генерации случайного числа
  * @param {integer} min - номер первого элемента из массива
  * @param {integer} max - номер последнего элемента из массива - не включая это значение
- * @return {integer} rand - номер случайного элемента из массива
+ * @return {integer} - номер случайного элемента из массива
  */
 var getRandomNum = function (min, max) {
   var rand = min + Math.random() * (max + 1 - min);
@@ -77,19 +75,20 @@ var PhotoDescription = function (n) {
  * Создаем массив оденотипных обьектов
  * @param {Object} ObjectSample - обьект-прототип, на основе которого будут сгенерированы остальные обьекты
  * @param {integer} count - количество обьектов для генерации
- * @return {Array} PhotosArray - массив из n-ого кол-ва сгенерированных обьектов
+ * @return {Array} - массив из n-ого кол-ва сгенерированных обьектов
  */
 var createArrayOfPhoto = function (ObjectSample, count) {
+  var photos = []; // массив для описания фоток
   for (var i = 0; i < count; i++) {
-    PhotosArray.push(new ObjectSample(i));
+    photos.push(new ObjectSample(i));
   }
-  return PhotosArray;
+  return photos;
 };
 
 /**
  * Cоздаем DOM-элементы, заполняем их данными
  * @param {Object} photo - обьект для изменения данных
- * @return {DOM} pictureElement - нужный нам шаблон с измененными данными
+ * @return {Node} - нужный нам шаблон с измененными данными
  */
 var createPictureElements = function (photo) {
   var pictureElement = picturesTemplate.cloneNode(true);
@@ -104,7 +103,7 @@ var createPictureElements = function (photo) {
 /**
  * Отрисовываем сгенерированные DOM-элементы на странице
  * @param {Array} arrayOfObjects - массив из нужного кол-ва обьектов
- * @param {DOM} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
+ * @param {Node} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
 */
 var insertElements = function (arrayOfObjects, parentNode) {
   var fragment = document.createDocumentFragment();
@@ -138,11 +137,11 @@ var removeOldComments = function () {
 };
 
 /**
- * Добавляем комментарии
- * @param {Object} objectFromArray - любой обьект из сгенерированного массива
+ * Добавляем комментарии всем фоткам
+ * @param {Object} photoFromArray - любой обьект из сгенерированного массива
  */
-var addComments = function (objectFromArray) {
-  objectFromArray.comments.forEach(function (comment) {
+var addComments = function (photoFromArray) {
+  photoFromArray.comments.forEach(function (comment) {
     var pictureComments = bigPicture.querySelector('.social__comments');
 
     var pictureComment = document.createElement('li');
@@ -177,9 +176,9 @@ var hideCommentsElements = function () {
  * Отрисовываем полную версию фотографии с комментариями
  */
 var renderBigPicture = function () {
-  setupBigPicture(PhotosArray[0]);
+  setupBigPicture(createArrayOfPhoto(PhotoDescription, 1));
   removeOldComments();
-  addComments(PhotosArray[0]);
+  addComments(createArrayOfPhoto(PhotoDescription, 1));
   hideCommentsElements();
 };
 
