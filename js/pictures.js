@@ -105,7 +105,7 @@ var createPictureElements = function (photo) {
  * @param {Array} arrayOfObjects - массив из нужного кол-ва обьектов
  * @param {Node} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
 */
-var insertElements = function (arrayOfObjects, parentNode) {
+var insertPhotos = function (arrayOfObjects, parentNode) {
   var fragment = document.createDocumentFragment();
   arrayOfObjects.forEach(function (element) {
     fragment.appendChild(createPictureElements(element));
@@ -137,11 +137,11 @@ var removeOldComments = function () {
 };
 
 /**
- * Добавляем комментарии всем фоткам
- * @param {Object} photoFromArray - любой обьект из сгенерированного массива
+ * Добавляем комментарии к большой фотке
+ * @param {Object} photo - любой обьект из сгенерированного массива
  */
-var addComments = function (photoFromArray) {
-  photoFromArray.comments.forEach(function (comment) {
+var addComments = function (photo) {
+  photo.comments.forEach(function (comment) {
     var pictureComments = bigPicture.querySelector('.social__comments');
 
     var pictureComment = document.createElement('li');
@@ -174,15 +174,16 @@ var hideCommentsElements = function () {
 
 /**
  * Отрисовываем полную версию фотографии с комментариями
+ * @param {Object} photo - первое фото из массива
  */
-var renderBigPicture = function () {
-  setupBigPicture(createArrayOfPhoto(PhotoDescription, 1));
+var renderBigPicture = function (photo) {
+  setupBigPicture(photo);
   removeOldComments();
-  addComments(createArrayOfPhoto(PhotoDescription, 1));
+  addComments(photo);
   hideCommentsElements();
 };
 
 // вызываем главные функции
 var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва обьектов
-insertElements(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
-renderBigPicture(); // Отрисовываем большую фотографию с комментариями и описанием
+insertPhotos(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
+renderBigPicture(readyPhotos[0]); // Отрисовываем большую фотографию с комментариями и описанием
