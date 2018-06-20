@@ -5,6 +5,17 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 var AVATARS_MAX = 6;
 
+// константы для слайдера
+var RESIZE_STEP = 25;
+var RESIZE_MAX = 100;
+var RESIZE_MIN = 25;
+var RESIZE_DEFAULT_VALUE = 100;
+
+var KeyCodes = {
+  ESC: 27,
+  ENTER: 13
+};
+
 var COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -26,6 +37,8 @@ var DESCRIPTION = [
 var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных DOM-элементов
 var picturesTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // искомый шаблон и нужный элемент в нем
 var bigPicture = document.querySelector('.big-picture');
+var bigPictureBtnClose = bigPicture.querySelector('.big-picture__cancel'); // кнопка закрытия большой фотки
+var pictureLinks = document.querySelectorAll('.picture__link'); // выбираем все нащи фотки
 
 /**
  * Функция генерации случайного числа
@@ -96,6 +109,7 @@ var createPictureElements = function (photo) {
   pictureElement.querySelector('.picture__img').src = photo.url;
   pictureElement.querySelector('.picture__stat--likes').textContent = photo.likes;
   pictureElement.querySelector('.picture__stat--comments').textContent = photo.comments.length;
+  pictureElement.dataset.id = photo.id;
 
   return pictureElement;
 };
@@ -186,4 +200,152 @@ var renderBigPicture = function (photo) {
 // вызываем главные функции
 var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва обьектов
 insertPhotos(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
-renderBigPicture(readyPhotos[0]); // Отрисовываем большую фотографию с комментариями и описанием
+// renderBigPicture(readyPhotos[0]); // Отрисовываем большую фотографию с комментариями и описанием
+
+// Элементы загрузки новых фоток
+var uploadFile = document.querySelector('#upload-file'); // инпут с типом file - элемент для загрузки изображения
+var uploadCancel = document.querySelector('#upload-cancel'); // кнопка закрытия формы редактирования изображения
+var imageUpload = document.querySelector('.img-upload__overlay'); // оверлэй для редактирования фото после ее загрузки
+
+// изменение масштаба фотки
+var resizeControlPanel = document.querySelector('.img-upload__resize');
+var resizeControlMinus = document.querySelector('.resize__control--minus');
+var resizeControlPlus = document.querySelector('.resize__control--plus');
+var resizeControlValue = document.querySelector('.resize__control--value');
+var imagePreview = document.querySelector('.img-upload__preview');
+
+// панель применения эффектов к оверлэю
+var effectControls = document.querySelectorAll('.effects__radio'); // радио-кнопки для выбора эффекта
+var scalePin = document.querySelector('.scale__pin'); // ползунок регулирования интенсивности эффекта
+var scaleValue = document.querySelector('.scale__value'); // Уровень эффекта - число от 0 до 100 - изначально 100
+var imagePreviewImg = document.querySelector('.img-upload__preview img'); // картинка внутри .img-upload__preview
+var imageSlider = document.querySelector('.img-upload__scale'); // сам слайдер
+
+var togglePopup = function (popup) {
+  popup.classList.toggle('hidden');
+};
+
+var bigPictureKeydownHandler = function (evt) {
+  if (evt.keyCode === KeyCodes.ESC) {
+    hideBigPicture();
+  }
+};
+
+var showBigPicture = function () {
+  togglePopup(bigPicture);
+  document.addEventListener('keydown', bigPictureKeydownHandler);
+};
+
+var hideBigPicture = function () {
+  togglePopup(bigPicture);
+  document.removeEventListener('keydown', bigPictureKeydownHandler);
+};
+
+var uploadCancelKeydownHandler = function (evt) {
+  if (evt.keyCode === KeyCodes.ESC && evt.target === uploadCancel) {
+    hideUploadImage();
+  }
+};
+
+var showUploadImage = function () {
+  togglePopup(imageUpload);
+  document.addEventListener('keydown', uploadCancelKeydownHandler);
+  resizeControlPanel.style.zIndex = 1;
+  resizeControlValue.style = RESIZE_DEFAULT_VALUE + '%';
+  scaleValue.value = RESIZE_MAX;
+};
+
+
+var hideUploadImage = function () {
+  togglePopup(imageUpload);
+  document.removeEventListener('keydown', uploadCancelKeydownHandler);
+  uploadFile.value = '';
+};
+
+var UploadCancelClickHandler = function () {
+  hideUploadImage();
+};
+
+var uploadFileChangeClickHandler = function () {
+  showUploadImage();
+};
+
+var onResizeControlClick = function (evt) {
+  var currentValue = Number.parseInt(resizeControlValue.value, 10);
+
+  if (evt.target === resizeControlMinus) {
+    if (currentValue > RESIZE_MIN) {
+      currentValue -= RESIZE_STEP;
+    }
+  } else if (evt.target === resizeControlPlus) {
+    if (currentValue < RESIZE_MAX) {
+      currentValue += RESIZE_STEP;
+    }
+  }
+
+  var scale = 'scale' + '(' + (currentValue / 100) + ')';
+  imagePreviewImg.style.transform = scale;
+
+  resizeControlValue = (currentValue + '%');
+};
+
+resizeControlPanel.addEventListener('click', onResizeControlClick, true);
+
+// обработчики
+uploadCancel.addEventListener('click', UploadCancelClickHandler);
+uploadFile.addEventListener('change', uploadFileChangeClickHandler);
+// pictureLinks.forEach(function (picture) {
+//   picture.addEventListener('click', showBigPicture);
+// });
+document.addEventListener('click', function (evt) {
+  if (evt.target.classList.contains('picture__img')) {
+    showBigPicture();
+  }
+});
+
+bigPictureBtnClose.addEventListener('click', hideBigPicture);
+bigPicture.addEventListener('keydown', bigPictureKeydownHandler);
+bigPictureBtnClose.addEventListener('focus', function (evt) {
+  if (evt.keyCode === KeyCodes.ENTER) {
+    hideBigPicture();
+  }
+});
+
+var effectsMap = {
+  none: {
+    className: '',
+    calcFilterValue: function () {
+      return null;
+    }
+  },
+  chrome: {
+    className: 'effects__preview--chrome',
+    calcFilterValue: function (value) {
+      return 'grayscale(' + value / 100 + ')';
+    }
+  },
+  sepia: {
+    className: 'effects__preview--sepia',
+    calcFilterValue: function (value) {
+      return 'sepia(' + value / 100 + ')';
+    }
+  },
+  marvin: {
+    className: 'effects__preview--marvin',
+    calcFilterValue: function (value) {
+      return 'invert(' + value + '%)';
+    }
+  },
+  phobos: {
+    className: 'effects__preview--phobos',
+    calcFilterValue: function (value) {
+      return 'blur(' + value / 100 * 3 + 'px)';
+    }
+  },
+  heat: {
+    className: 'effects__preview--heat',
+    calcFilterValue: function (value) {
+      return 'brightness(' + (1 + value / 100 * 2) + ')';
+    }
+  }
+};
