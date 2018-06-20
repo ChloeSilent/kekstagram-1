@@ -250,9 +250,11 @@ var uploadCancelKeydownHandler = function (evt) {
 var showUploadImage = function () {
   togglePopup(imageUpload);
   document.addEventListener('keydown', uploadCancelKeydownHandler);
-  resizeControlPanel.style.zIndex = 1;
-  resizeControlValue.style = RESIZE_DEFAULT_VALUE + '%';
+  resizeControlValue.value = RESIZE_DEFAULT_VALUE + '%';
   scaleValue.value = RESIZE_MAX;
+  resizeControlMinus.addEventListener('click', onResizeControlClick);
+  resizeControlPlus.addEventListener('click', onResizeControlClick);
+  applyEffect();
 };
 
 
@@ -271,7 +273,7 @@ var uploadFileChangeClickHandler = function () {
 };
 
 var onResizeControlClick = function (evt) {
-  var currentValue = Number.parseInt(resizeControlValue.value, 10);
+  var currentValue = parseInt(resizeControlValue.value, 10);
 
   if (evt.target === resizeControlMinus) {
     if (currentValue > RESIZE_MIN) {
@@ -290,6 +292,8 @@ var onResizeControlClick = function (evt) {
 };
 
 resizeControlPanel.addEventListener('click', onResizeControlClick, true);
+resizeControlMinus.addEventListener('click', onResizeControlClick);
+resizeControlPlus.addEventListener('click', onResizeControlClick);
 
 // обработчики
 uploadCancel.addEventListener('click', UploadCancelClickHandler);
@@ -348,4 +352,43 @@ var effectsMap = {
       return 'brightness(' + (1 + value / 100 * 2) + ')';
     }
   }
+};
+
+var applyEffect = function () {
+  var currentEffect = document.querySelector('.effects__radio:checked').value;
+  imagePreviewImg.className = effectsMap[currentEffect].className;
+  imagePreviewImg.style.filter = effectsMap[currentEffect].calcFilterValue(scaleValue.value);
+  if (currentEffect === 'none') {
+    imageSlider.classList.add('hidden');
+  } else if (imageSlider.classList.contains('hidden')) {
+    imageSlider.classList.remove('hidden');
+  }
+};
+
+var calcEffectScale = function () {
+  var scaleLineElement = document.querySelector('.scale__line');
+  var scaleLevelElement = document.querySelector('.scale__level');
+  var maxValue = scaleLineElement.offsetWidth;
+  var currentValue = scaleLevelElement.offsetWidth;
+  return Math.round(currentValue / maxValue * 100);
+};
+
+var onScalePinControlMouseup = function () {
+  scaleValue.value = calcEffectScale();
+  applyEffect();
+};
+
+var onEffectControlChange = function () {
+  scaleValue.value = 100;
+  applyEffect();
+};
+
+scalePin.addEventListener('mouseup', onScalePinControlMouseup);
+
+for (var i = 0; i < effectControls.length; i++) {
+  effectControls[i].addEventListener('change', onEffectControlChange);
+}
+
+effectControls.forEach(function (control) {
+  control.addEventListener('change', onEffectControlChange);
 };
