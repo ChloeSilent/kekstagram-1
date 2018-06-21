@@ -1,15 +1,20 @@
 'use strict';
 
-var NUMBER_OF_OBJECTS = 25; // нужное кол-во обьектов
+var NUMBER_OF_OBJECTS = 25; // нужное кол-во объектов
+
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
-var AVATARS_MAX = 6;
+var MAX_AVATARS = 6;
 
-// константы для слайдера
-var RESIZE_STEP = 25;
-var RESIZE_MAX = 100;
-var RESIZE_MIN = 25;
-var RESIZE_DEFAULT_VALUE = 100;
+// Перечисление для уровня масштаба
+var Resize = {
+  DEFAULT_VALUE: 100,
+  MIN: 25,
+  MAX: 100,
+  STEP: 25
+};
+
+var SCALE_DEFAULT_VALUE = 100; // изначальный уровень применения эффекта
 
 var KeyCodes = {
   ESC: 27,
@@ -34,29 +39,21 @@ var DESCRIPTION = [
   'Вот это тачка!'
 ];
 
-var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных DOM-элементов
-var picturesTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // искомый шаблон и нужный элемент в нем
-var bigPicture = document.querySelector('.big-picture');
-var bigPictureBtnClose = bigPicture.querySelector('.big-picture__cancel'); // кнопка закрытия большой фотки
-var pictureLinks = document.querySelectorAll('.picture__link'); // выбираем все нащи фотки
-
 /**
  * Функция генерации случайного числа
  * @param {integer} min - номер первого элемента из массива
  * @param {integer} max - номер последнего элемента из массива - не включая это значение
  * @return {integer} - номер случайного элемента из массива
  */
-var getRandomNum = function (min, max) {
-  var rand = min + Math.random() * (max + 1 - min);
-  rand = Math.floor(rand);
-  return rand;
+var getRandomNumber = function (min, max) {
+  return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
 /**
  * Вспомогательная функция для сортировки массива в произвольном порядке
  * @return {integer} - псевдослучайное число из диапазона [0, 1), то есть, от 0 (включительно) до 1 (но не включая 1)
  */
-var compareRandom = function () {
+var compareRandomElements = function () {
   return Math.random() - 0.5;
 };
 
@@ -66,29 +63,29 @@ var compareRandom = function () {
  */
 var generateComment = function () {
   var commentsCopy = COMMENTS.slice();
-  commentsCopy.sort(compareRandom);
+  commentsCopy.sort(compareRandomElements);
 
-  var commentsSmallCopy = commentsCopy.slice(0, getRandomNum(1, 2));
-
+  var commentsSmallCopy = commentsCopy.slice(0, getRandomNumber(1, 2));
   return commentsSmallCopy;
 };
 
 /**
- * Создаем обьект через функцию конструктор
- * @param {integer} n - текущий номер обьекта
+ * Создаем объект через функцию конструктор
+ * @constructor
+ * @param {integer} n - текущий номер объекта
  */
 var PhotoDescription = function (n) {
   this.url = 'photos/' + (n + 1) + '.jpg';
-  this.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
+  this.likes = getRandomNumber(MIN_LIKES, MAX_LIKES);
   this.comments = generateComment(COMMENTS);
-  this.description = DESCRIPTION[getRandomNum(0, DESCRIPTION.length)];
+  this.description = DESCRIPTION[getRandomNumber(0, DESCRIPTION.length)];
 };
 
 /**
- * Создаем массив оденотипных обьектов
- * @param {Object} ObjectSample - обьект-прототип, на основе которого будут сгенерированы остальные обьекты
- * @param {integer} count - количество обьектов для генерации
- * @return {Array} - массив из n-ого кол-ва сгенерированных обьектов
+ * Создаем массив однотипных объектов
+ * @param {Object} ObjectSample - объект-прототип, на основе которого будут сгенерированы остальные объекты
+ * @param {integer} count - количество объектов для генерации
+ * @return {Array} - массив из n-ого кол-ва сгенерированных объектов
  */
 var createArrayOfPhoto = function (ObjectSample, count) {
   var photos = []; // массив для описания фоток
@@ -100,23 +97,26 @@ var createArrayOfPhoto = function (ObjectSample, count) {
 
 /**
  * Cоздаем DOM-элементы, заполняем их данными
- * @param {Object} photo - обьект для изменения данных
+ * @param {Object} photo - объект для изменения данных
  * @return {Node} - нужный нам шаблон с измененными данными
  */
 var createPictureElements = function (photo) {
+  var picturesTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // искомый шаблон и нужный элемент в нем
   var pictureElement = picturesTemplate.cloneNode(true);
 
   pictureElement.querySelector('.picture__img').src = photo.url;
   pictureElement.querySelector('.picture__stat--likes').textContent = photo.likes;
-  pictureElement.querySelector('.picture__stat--comments').textContent = photo.comments.length;
+  pictureElement.querySelector('.picture__stat--comments').textContent = photo.comments.lengt;
   pictureElement.dataset.id = photo.id;
+
+  pictureElement.addEventListener('click', renderBigPicture(photo));
 
   return pictureElement;
 };
 
 /**
  * Отрисовываем сгенерированные DOM-элементы на странице
- * @param {Array} arrayOfObjects - массив из нужного кол-ва обьектов
+ * @param {Array} arrayOfObjects - массив из нужного кол-ва объектов
  * @param {Node} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
 */
 var insertPhotos = function (arrayOfObjects, parentNode) {
@@ -128,10 +128,12 @@ var insertPhotos = function (arrayOfObjects, parentNode) {
   parentNode.appendChild(fragment);
 };
 
-// работаем с фотками
+var bigPicture = document.querySelector('.big-picture');
+var bigPictureBtnClose = bigPicture.querySelector('.big-picture__cancel'); // кнопка закрытия большой фотки
+
 /**
  * Разворачиваем полную версию фотографии с комментариями и описанием
- * @param {Object} photo - обьект, на основе которого будут изменяться данные
+ * @param {Object} photo - объект, на основе которого будут изменяться данные
  */
 var setupBigPicture = function (photo) {
   bigPicture.classList.remove('hidden'); // показываем большое фото
@@ -152,7 +154,7 @@ var removeOldComments = function () {
 
 /**
  * Добавляем комментарии к большой фотке
- * @param {Object} photo - любой обьект из сгенерированного массива
+ * @param {Object} photo - любой объект из сгенерированного массива
  */
 var addComments = function (photo) {
   photo.comments.forEach(function (comment) {
@@ -164,7 +166,7 @@ var addComments = function (photo) {
 
     var pictureCommentImg = document.createElement('img');
     pictureCommentImg.classList.add('social__picture');
-    pictureCommentImg.src = 'img/avatar-' + getRandomNum(1, AVATARS_MAX) + '.svg';
+    pictureCommentImg.src = 'img/avatar-' + getRandomNumber(1, MAX_AVATARS) + '.svg';
     pictureCommentImg.alt = 'Аватар комментатора фотографии';
     pictureCommentImg.width = 35;
     pictureCommentImg.height = 35;
@@ -198,7 +200,8 @@ var renderBigPicture = function (photo) {
 };
 
 // вызываем главные функции
-var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва обьектов
+var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных фоток
+var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва объектов
 insertPhotos(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
 // renderBigPicture(readyPhotos[0]); // Отрисовываем большую фотографию с комментариями и описанием
 
@@ -209,10 +212,8 @@ var imageUpload = document.querySelector('.img-upload__overlay'); // оверл�
 
 // изменение масштаба фотки
 var resizeControlPanel = document.querySelector('.img-upload__resize');
-var resizeControlMinus = document.querySelector('.resize__control--minus');
-var resizeControlPlus = document.querySelector('.resize__control--plus');
-var resizeControlValue = document.querySelector('.resize__control--value');
-var imagePreview = document.querySelector('.img-upload__preview');
+var resizeControlEl = document.querySelector('.resize__control--value');
+// var imagePreview = document.querySelector('.img-upload__preview');
 
 // панель применения эффектов к оверлэю
 var effectControls = document.querySelectorAll('.effects__radio'); // радио-кнопки для выбора эффекта
@@ -242,65 +243,59 @@ var hideBigPicture = function () {
 };
 
 var uploadCancelKeydownHandler = function (evt) {
-  if (evt.keyCode === KeyCodes.ESC && evt.target === uploadCancel) {
-    hideUploadImage();
+  if (evt.keyCode === KeyCodes.ESC) {
+    uploadCancelClickHandler();
   }
 };
 
-var showUploadImage = function () {
-  togglePopup(imageUpload);
-  document.addEventListener('keydown', uploadCancelKeydownHandler);
-  resizeControlValue.value = RESIZE_DEFAULT_VALUE + '%';
-  scaleValue.value = RESIZE_MAX;
-  resizeControlMinus.addEventListener('click', onResizeControlClick);
-  resizeControlPlus.addEventListener('click', onResizeControlClick);
-  applyEffect();
-};
-
-
-var hideUploadImage = function () {
+/**
+ * Функция закрытия оверлэя с загруженным изображением
+ */
+var uploadCancelClickHandler = function () {
   togglePopup(imageUpload);
   document.removeEventListener('keydown', uploadCancelKeydownHandler);
   uploadFile.value = '';
 };
 
-var UploadCancelClickHandler = function () {
-  hideUploadImage();
-};
-
+/**
+ * Функция, открывающая оверлэй для загрузки изображения и работы над ним
+ */
 var uploadFileChangeClickHandler = function () {
-  showUploadImage();
+  togglePopup(imageUpload);
+  document.addEventListener('keydown', uploadCancelKeydownHandler);
+  resizeControlEl.value = Resize.DEFAULT_VALUE + '%';
+  scaleValue.value = SCALE_DEFAULT_VALUE;
+  applyEffect();
 };
 
+/**
+ * Масштабируем загружаемое изображение с шагом в 25%
+ * @param {Object} evt - объект события, по которому мы определяем на какую кнопку (на + или -) нажал пользователь
+ */
 var onResizeControlClick = function (evt) {
-  var currentValue = parseInt(resizeControlValue.value, 10);
+  var currentValue = parseInt(resizeControlEl.value, 10);
 
-  if (evt.target === resizeControlMinus) {
-    if (currentValue > RESIZE_MIN) {
-      currentValue -= RESIZE_STEP;
+  if (evt.target.classList.contains('resize__control--minus')) {
+    if (currentValue > Resize.MIN) {
+      currentValue -= Resize.STEP;
     }
-  } else if (evt.target === resizeControlPlus) {
-    if (currentValue < RESIZE_MAX) {
-      currentValue += RESIZE_STEP;
+  } else if (evt.target.classList.contains('resize__control--plus')) {
+    if (currentValue < Resize.MAX) {
+      currentValue += Resize.STEP;
     }
   }
 
-  var scale = 'scale' + '(' + (currentValue / 100) + ')';
+  var scale = 'scale' + '(' + (currentValue / SCALE_DEFAULT_VALUE) + ')';
   imagePreviewImg.style.transform = scale;
-
-  resizeControlValue = (currentValue + '%');
+  resizeControlEl.value = currentValue + '%';
 };
 
 resizeControlPanel.addEventListener('click', onResizeControlClick, true);
-resizeControlMinus.addEventListener('click', onResizeControlClick);
-resizeControlPlus.addEventListener('click', onResizeControlClick);
 
 // обработчики
-uploadCancel.addEventListener('click', UploadCancelClickHandler);
+uploadCancel.addEventListener('click', uploadCancelClickHandler);
 uploadFile.addEventListener('change', uploadFileChangeClickHandler);
-// pictureLinks.forEach(function (picture) {
-//   picture.addEventListener('click', showBigPicture);
-// });
+
 document.addEventListener('click', function (evt) {
   if (evt.target.classList.contains('picture__img')) {
     showBigPicture();
@@ -385,10 +380,6 @@ var onEffectControlChange = function () {
 
 scalePin.addEventListener('mouseup', onScalePinControlMouseup);
 
-for (var i = 0; i < effectControls.length; i++) {
-  effectControls[i].addEventListener('change', onEffectControlChange);
-}
-
 effectControls.forEach(function (control) {
   control.addEventListener('change', onEffectControlChange);
-};
+});
