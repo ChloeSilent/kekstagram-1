@@ -16,6 +16,13 @@ var Resize = {
 
 var SCALE_DEFAULT_VALUE = 100; // изначальный уровень применения эффекта
 
+// перечисление для ХэшТэгов
+var Hashtag = {
+  MAX_COUNT: 5,
+  STARTING_SYMBOL: '#',
+  MAX_LENGTH: 20
+};
+
 var KeyCodes = {
   ESC: 27,
   ENTER: 13
@@ -210,11 +217,6 @@ var uploadFile = document.querySelector('#upload-file'); // инпут с тип
 var uploadCancel = document.querySelector('#upload-cancel'); // кнопка закрытия формы редактирования изображения
 var imageUpload = document.querySelector('.img-upload__overlay'); // оверлэй для редактирования фото после ее загрузки
 
-// изменение масштаба фотки
-var resizeControlPanel = document.querySelector('.img-upload__resize');
-var resizeControlEl = document.querySelector('.resize__control--value');
-// var imagePreview = document.querySelector('.img-upload__preview');
-
 // панель применения эффектов к оверлэю
 var effectControls = document.querySelectorAll('.effects__radio'); // радио-кнопки для выбора эффекта
 var scalePin = document.querySelector('.scale__pin'); // ползунок регулирования интенсивности эффекта
@@ -226,17 +228,26 @@ var togglePopup = function (popup) {
   popup.classList.toggle('hidden');
 };
 
+/**
+ * Прячем большую фотку, если пользователь нажал верную клавишу на клавиатуре
+ * @param  {Object} evt - объект event, нужен для определения клавиатурной клавиши, по которой нажал пользователь
+ */
 var bigPictureKeydownHandler = function (evt) {
   if (evt.keyCode === KeyCodes.ESC) {
     hideBigPicture();
   }
 };
 
+/**
+ * Прячем большую фотку
+ */
 var showBigPicture = function () {
   togglePopup(bigPicture);
   document.addEventListener('keydown', bigPictureKeydownHandler);
 };
-
+/**
+ * Показываем полное большое фото
+ */
 var hideBigPicture = function () {
   togglePopup(bigPicture);
   document.removeEventListener('keydown', bigPictureKeydownHandler);
@@ -257,15 +268,20 @@ var uploadCancelClickHandler = function () {
   uploadFile.value = '';
 };
 
+// изменение масштаба фотки
+var resizeControlPanel = document.querySelector('.img-upload__resize');
+var resizeControlEl = document.querySelector('.resize__control--value');
+// var imagePreview = document.querySelector('.img-upload__preview');
+
 /**
  * Функция, открывающая оверлэй для загрузки изображения и работы над ним
  */
 var uploadFileChangeClickHandler = function () {
   togglePopup(imageUpload);
   document.addEventListener('keydown', uploadCancelKeydownHandler);
+  resizeControlPanel.addEventListener('click', onResizeControlClick, true);
   resizeControlEl.value = Resize.DEFAULT_VALUE + '%';
   scaleValue.value = SCALE_DEFAULT_VALUE;
-  applyEffect();
 };
 
 /**
@@ -290,27 +306,21 @@ var onResizeControlClick = function (evt) {
   resizeControlEl.value = currentValue + '%';
 };
 
-resizeControlPanel.addEventListener('click', onResizeControlClick, true);
-
 // обработчики
 uploadCancel.addEventListener('click', uploadCancelClickHandler);
 uploadFile.addEventListener('change', uploadFileChangeClickHandler);
 
 document.addEventListener('click', function (evt) {
   if (evt.target.classList.contains('picture__img')) {
-    showBigPicture();
+    showBigPicture(evt.target.src);
   }
 });
 
 bigPictureBtnClose.addEventListener('click', hideBigPicture);
 bigPicture.addEventListener('keydown', bigPictureKeydownHandler);
-bigPictureBtnClose.addEventListener('focus', function (evt) {
-  if (evt.keyCode === KeyCodes.ENTER) {
-    hideBigPicture();
-  }
-});
 
-var effectsMap = {
+// Словарь эффектов с названиями и значениями
+var EffectsMap = {
   none: {
     className: '',
     calcFilterValue: function () {
@@ -349,10 +359,13 @@ var effectsMap = {
   }
 };
 
+/**
+ * Применяем эффект к фотке в зависимости от выбранного в списке эффектов ниже (с классом effects__item)
+ */
 var applyEffect = function () {
   var currentEffect = document.querySelector('.effects__radio:checked').value;
-  imagePreviewImg.className = effectsMap[currentEffect].className;
-  imagePreviewImg.style.filter = effectsMap[currentEffect].calcFilterValue(scaleValue.value);
+  imagePreviewImg.className = EffectsMap[currentEffect].className;
+  imagePreviewImg.style.filter = EffectsMap[currentEffect].calcFilterValue(scaleValue.value);
   if (currentEffect === 'none') {
     imageSlider.classList.add('hidden');
   } else if (imageSlider.classList.contains('hidden')) {
@@ -360,26 +373,102 @@ var applyEffect = function () {
   }
 };
 
+/**
+ * Находим и возврщаем уровень эффекта
+ * @return {integer} - значение уровня эффекта
+ */
 var calcEffectScale = function () {
-  var scaleLineElement = document.querySelector('.scale__line');
-  var scaleLevelElement = document.querySelector('.scale__level');
-  var maxValue = scaleLineElement.offsetWidth;
-  var currentValue = scaleLevelElement.offsetWidth;
+  var scaleLineEl = document.querySelector('.scale__line');
+  var scaleLevelEl = document.querySelector('.scale__level');
+  var maxValue = scaleLineEl.offsetWidth;
+  var currentValue = scaleLevelEl.offsetWidth - scalePin.offsetWidth / 2;
   return Math.round(currentValue / maxValue * 100);
 };
 
-var onScalePinControlMouseup = function () {
+var scalePinMouseupHandler = function () {
   scaleValue.value = calcEffectScale();
   applyEffect();
 };
 
-var onEffectControlChange = function () {
+var effectsControlChangeHandler = function () {
   scaleValue.value = 100;
   applyEffect();
 };
 
-scalePin.addEventListener('mouseup', onScalePinControlMouseup);
+scalePin.addEventListener('mouseup', scalePinMouseupHandler);
 
 effectControls.forEach(function (control) {
-  control.addEventListener('change', onEffectControlChange);
+  control.addEventListener('change', effectsControlChangeHandler);
+});
+
+/**
+ * При неверном заполнении элемента - показываем данную функцию
+ * @param  {Node} element - неправильно заполненное поле формы
+ * @param  {string} message - сообщение пользователю, указывающее на неверно заполненное поле
+ */
+var setErrorState = function (element, message) {
+  element.style.borderColor = 'red';
+  element.style.borderWidth = '3px';
+  element.setCustomValidity(message);
+};
+/**
+ * Функиця, кот. будет отрабатывать, если поле формы заполнено верно
+ * @param  {Node} element - верно заполенное поле
+ */
+var setOrdinaryState = function (element) {
+  element.style.borderColor = 'yellow';
+  element.setCustomValidity('');
+};
+
+var uploadHashtagsEl = document.querySelector('.text__hashtags');
+uploadHashtagsEl.addEventListener('focus', function (evt) {
+  if (evt.target === uploadHashtagsEl) {
+    document.removeEventListener('keydown', uploadCancelKeydownHandler);
+  }
+});
+
+uploadHashtagsEl.addEventListener('change', function (evt) {
+  var hashtags = evt.currentTarget.value.toLowerCase().split(' ');
+  var j;
+
+  if (hashtags.length > Hashtag.MAX_СOUNT) {
+    setErrorState(evt.target, 'Максимальное число ХэшТэгов - ' + Hashtag.MAX_COUNT);
+    return;
+  } else {
+    setOrdinaryState(evt.target);
+  }
+
+  for (var i = 0; i < hashtags.length; i++) {
+    if (hashtags[i][0] !== Hashtag.STARTING_SYMBOL) {
+      setErrorState(evt.target, 'ХэшТэг должне начинаться со знака #');
+      return;
+    } else {
+      setOrdinaryState(evt.target);
+    }
+
+    if (hashtags[i].length > Hashtag.MAX_LENGTH) {
+      setErrorState(evt.target, 'Максимальная длина хэштэга - ' + Hashtag.MAX_LENGTH + ' символов');
+      return;
+    } else {
+      setOrdinaryState(evt.target);
+    }
+
+    for (j = 0; j < hashtags.length; j++) {
+      if (hashtags[i] === hashtags[j] && i !== j) {
+        setErrorState(evt.target, 'ХэшТэги не должны повторяться!');
+        return;
+      } else {
+        setOrdinaryState(evt.target);
+      }
+    }
+
+    for (j = 0; j < hashtags.length; j++) {
+      if (hashtags[i][j] === Hashtag.STARTING_SYMBOL && j !== 0) {
+        setErrorState(evt.target, 'Хэштэги должны разделяться пробелами');
+        return;
+      } else {
+        setOrdinaryState(evt.target);
+      }
+    }
+  }
 });
