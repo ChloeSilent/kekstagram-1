@@ -1,11 +1,32 @@
 'use strict';
 
-var NUMBER_OF_OBJECTS = 25; // нужное кол-во обьектов
+var NUMBER_OF_OBJECTS = 25; // нужное кол-во объектов
+
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
-var AVATARS_MAX = 6;
+var MAX_AVATARS = 6;
 
-var PhotosArray = []; // массив для описания фоток
+// Перечисление для уровня масштаба
+var Resize = {
+  DEFAULT_VALUE: 100,
+  MIN: 25,
+  MAX: 100,
+  STEP: 25
+};
+
+var SCALE_DEFAULT_VALUE = 100; // изначальный уровень применения эффекта
+
+// перечисление для ХэшТэгов
+var Hashtag = {
+  MAX_COUNT: 5,
+  STARTING_SYMBOL: '#',
+  MAX_LENGTH: 20
+};
+
+var KeyCodes = {
+  ESC: 27,
+  ENTER: 13
+};
 
 var COMMENTS = [
   'Всё отлично!',
@@ -25,27 +46,21 @@ var DESCRIPTION = [
   'Вот это тачка!'
 ];
 
-var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных DOM-элементов
-var picturesTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // искомый шаблон и нужный элемент в нем
-var bigPicture = document.querySelector('.big-picture');
-
 /**
  * Функция генерации случайного числа
  * @param {integer} min - номер первого элемента из массива
  * @param {integer} max - номер последнего элемента из массива - не включая это значение
- * @return {integer} rand - номер случайного элемента из массива
+ * @return {integer} - номер случайного элемента из массива
  */
-var getRandomNum = function (min, max) {
-  var rand = min + Math.random() * (max + 1 - min);
-  rand = Math.floor(rand);
-  return rand;
+var getRandomNumber = function (min, max) {
+  return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
 /**
  * Вспомогательная функция для сортировки массива в произвольном порядке
  * @return {integer} - псевдослучайное число из диапазона [0, 1), то есть, от 0 (включительно) до 1 (но не включая 1)
  */
-var compareRandom = function () {
+var compareRandomElements = function () {
   return Math.random() - 0.5;
 };
 
@@ -55,58 +70,63 @@ var compareRandom = function () {
  */
 var generateComment = function () {
   var commentsCopy = COMMENTS.slice();
-  commentsCopy.sort(compareRandom);
+  commentsCopy.sort(compareRandomElements);
 
-  var commentsSmallCopy = commentsCopy.slice(0, getRandomNum(1, 2));
-
+  var commentsSmallCopy = commentsCopy.slice(0, getRandomNumber(1, 2));
   return commentsSmallCopy;
 };
 
 /**
- * Создаем обьект через функцию конструктор
- * @param {integer} n - текущий номер обьекта
+ * Создаем объект через функцию конструктор
+ * @constructor
+ * @param {integer} n - текущий номер объекта
  */
 var PhotoDescription = function (n) {
   this.url = 'photos/' + (n + 1) + '.jpg';
-  this.likes = getRandomNum(MIN_LIKES, MAX_LIKES);
+  this.likes = getRandomNumber(MIN_LIKES, MAX_LIKES);
   this.comments = generateComment(COMMENTS);
-  this.description = DESCRIPTION[getRandomNum(0, DESCRIPTION.length)];
+  this.description = DESCRIPTION[getRandomNumber(0, DESCRIPTION.length)];
 };
 
 /**
- * Создаем массив оденотипных обьектов
- * @param {Object} ObjectSample - обьект-прототип, на основе которого будут сгенерированы остальные обьекты
- * @param {integer} count - количество обьектов для генерации
- * @return {Array} PhotosArray - массив из n-ого кол-ва сгенерированных обьектов
+ * Создаем массив однотипных объектов
+ * @param {Object} ObjectSample - объект-прототип, на основе которого будут сгенерированы остальные объекты
+ * @param {integer} count - количество объектов для генерации
+ * @return {Array} - массив из n-ого кол-ва сгенерированных объектов
  */
 var createArrayOfPhoto = function (ObjectSample, count) {
+  var photos = []; // массив для описания фоток
   for (var i = 0; i < count; i++) {
-    PhotosArray.push(new ObjectSample(i));
+    photos.push(new ObjectSample(i));
   }
-  return PhotosArray;
+  return photos;
 };
 
 /**
  * Cоздаем DOM-элементы, заполняем их данными
- * @param {Object} photo - обьект для изменения данных
- * @return {DOM} pictureElement - нужный нам шаблон с измененными данными
+ * @param {Object} photo - объект для изменения данных
+ * @return {Node} - нужный нам шаблон с измененными данными
  */
 var createPictureElements = function (photo) {
+  var picturesTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // искомый шаблон и нужный элемент в нем
   var pictureElement = picturesTemplate.cloneNode(true);
 
   pictureElement.querySelector('.picture__img').src = photo.url;
   pictureElement.querySelector('.picture__stat--likes').textContent = photo.likes;
-  pictureElement.querySelector('.picture__stat--comments').textContent = photo.comments.length;
+  pictureElement.querySelector('.picture__stat--comments').textContent = photo.comments.lengt;
+  pictureElement.dataset.id = photo.id;
+
+  pictureElement.addEventListener('click', renderBigPicture(photo));
 
   return pictureElement;
 };
 
 /**
  * Отрисовываем сгенерированные DOM-элементы на странице
- * @param {Array} arrayOfObjects - массив из нужного кол-ва обьектов
- * @param {DOM} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
+ * @param {Array} arrayOfObjects - массив из нужного кол-ва объектов
+ * @param {Node} parentNode - блок для вставки на страницу сгенерированных DOM-элементов
 */
-var insertElements = function (arrayOfObjects, parentNode) {
+var insertPhotos = function (arrayOfObjects, parentNode) {
   var fragment = document.createDocumentFragment();
   arrayOfObjects.forEach(function (element) {
     fragment.appendChild(createPictureElements(element));
@@ -115,10 +135,12 @@ var insertElements = function (arrayOfObjects, parentNode) {
   parentNode.appendChild(fragment);
 };
 
-// работаем с фотками
+var bigPicture = document.querySelector('.big-picture');
+var bigPictureBtnClose = bigPicture.querySelector('.big-picture__cancel'); // кнопка закрытия большой фотки
+
 /**
  * Разворачиваем полную версию фотографии с комментариями и описанием
- * @param {Object} photo - обьект, на основе которого будут изменяться данные
+ * @param {Object} photo - объект, на основе которого будут изменяться данные
  */
 var setupBigPicture = function (photo) {
   bigPicture.classList.remove('hidden'); // показываем большое фото
@@ -138,11 +160,11 @@ var removeOldComments = function () {
 };
 
 /**
- * Добавляем комментарии
- * @param {Object} objectFromArray - любой обьект из сгенерированного массива
+ * Добавляем комментарии к большой фотке
+ * @param {Object} photo - любой объект из сгенерированного массива
  */
-var addComments = function (objectFromArray) {
-  objectFromArray.comments.forEach(function (comment) {
+var addComments = function (photo) {
+  photo.comments.forEach(function (comment) {
     var pictureComments = bigPicture.querySelector('.social__comments');
 
     var pictureComment = document.createElement('li');
@@ -151,7 +173,7 @@ var addComments = function (objectFromArray) {
 
     var pictureCommentImg = document.createElement('img');
     pictureCommentImg.classList.add('social__picture');
-    pictureCommentImg.src = 'img/avatar-' + getRandomNum(1, AVATARS_MAX) + '.svg';
+    pictureCommentImg.src = 'img/avatar-' + getRandomNumber(1, MAX_AVATARS) + '.svg';
     pictureCommentImg.alt = 'Аватар комментатора фотографии';
     pictureCommentImg.width = 35;
     pictureCommentImg.height = 35;
@@ -175,15 +197,277 @@ var hideCommentsElements = function () {
 
 /**
  * Отрисовываем полную версию фотографии с комментариями
+ * @param {Object} photo - первое фото из массива
  */
-var renderBigPicture = function () {
-  setupBigPicture(PhotosArray[0]);
+var renderBigPicture = function (photo) {
+  setupBigPicture(photo);
   removeOldComments();
-  addComments(PhotosArray[0]);
+  addComments(photo);
   hideCommentsElements();
 };
 
 // вызываем главные функции
-var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва обьектов
-insertElements(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
-renderBigPicture(); // Отрисовываем большую фотографию с комментариями и описанием
+var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных фоток
+var readyPhotos = createArrayOfPhoto(PhotoDescription, NUMBER_OF_OBJECTS); // создаем массив из n кол-ва объектов
+insertPhotos(readyPhotos, picturesList); // добавляем данные DOM-элементы в нужное место на странице
+// renderBigPicture(readyPhotos[0]); // Отрисовываем большую фотографию с комментариями и описанием
+
+// Элементы загрузки новых фоток
+var uploadFile = document.querySelector('#upload-file'); // инпут с типом file - элемент для загрузки изображения
+var uploadCancel = document.querySelector('#upload-cancel'); // кнопка закрытия формы редактирования изображения
+var imageUpload = document.querySelector('.img-upload__overlay'); // оверлэй для редактирования фото после ее загрузки
+
+// панель применения эффектов к оверлэю
+var effectControls = document.querySelectorAll('.effects__radio'); // радио-кнопки для выбора эффекта
+var scalePin = document.querySelector('.scale__pin'); // ползунок регулирования интенсивности эффекта
+var scaleValue = document.querySelector('.scale__value'); // Уровень эффекта - число от 0 до 100 - изначально 100
+var imagePreviewImg = document.querySelector('.img-upload__preview img'); // картинка внутри .img-upload__preview
+var imageSlider = document.querySelector('.img-upload__scale'); // сам слайдер
+
+var togglePopup = function (popup) {
+  popup.classList.toggle('hidden');
+};
+
+/**
+ * Прячем большую фотку, если пользователь нажал верную клавишу на клавиатуре
+ * @param  {Object} evt - объект event, нужен для определения клавиатурной клавиши, по которой нажал пользователь
+ */
+var bigPictureKeydownHandler = function (evt) {
+  if (evt.keyCode === KeyCodes.ESC) {
+    hideBigPicture();
+  }
+};
+
+/**
+ * Прячем большую фотку
+ */
+var showBigPicture = function () {
+  togglePopup(bigPicture);
+  document.addEventListener('keydown', bigPictureKeydownHandler);
+};
+/**
+ * Показываем полное большое фото
+ */
+var hideBigPicture = function () {
+  togglePopup(bigPicture);
+  document.removeEventListener('keydown', bigPictureKeydownHandler);
+};
+
+// Закрытие оверлэя по нажатии на ESC (при этом если поле ввода ХэшТэегов и поле Описание в фокусе - закрытие не происходит)
+var uploadCancelKeydownHandler = function (evt) {
+  if (evt.keyCode === KeyCodes.ESC &&
+    evt.target !== document.querySelector('.text__hashtags') &&
+    evt.target !== document.querySelector('.text__description')) {
+    uploadCancelClickHandler();
+  }
+};
+
+/**
+ * Функция закрытия оверлэя с загруженным изображением
+ */
+var uploadCancelClickHandler = function () {
+  togglePopup(imageUpload);
+  document.removeEventListener('keydown', uploadCancelKeydownHandler);
+  uploadFile.value = '';
+};
+
+// изменение масштаба фотки
+var resizeControlPanel = document.querySelector('.img-upload__resize');
+var resizeControlEl = document.querySelector('.resize__control--value');
+// var imagePreview = document.querySelector('.img-upload__preview');
+
+/**
+ * Функция, открывающая оверлэй для загрузки изображения и работы над ним
+ */
+var uploadFileChangeClickHandler = function () {
+  togglePopup(imageUpload);
+  document.addEventListener('keydown', uploadCancelKeydownHandler);
+  resizeControlPanel.addEventListener('click', onResizeControlClick, true);
+  resizeControlEl.value = Resize.DEFAULT_VALUE + '%';
+  scaleValue.value = SCALE_DEFAULT_VALUE;
+};
+
+/**
+ * Масштабируем загружаемое изображение с шагом в 25%
+ * @param {Object} evt - объект события, по которому мы определяем на какую кнопку (на + или -) нажал пользователь
+ */
+var onResizeControlClick = function (evt) {
+  var currentValue = parseInt(resizeControlEl.value, 10);
+
+  if (evt.target.classList.contains('resize__control--minus')) {
+    if (currentValue > Resize.MIN) {
+      currentValue -= Resize.STEP;
+    }
+  } else if (evt.target.classList.contains('resize__control--plus')) {
+    if (currentValue < Resize.MAX) {
+      currentValue += Resize.STEP;
+    }
+  }
+
+  var scale = 'scale' + '(' + (currentValue / SCALE_DEFAULT_VALUE) + ')';
+  imagePreviewImg.style.transform = scale;
+  resizeControlEl.value = currentValue + '%';
+};
+
+// обработчики
+uploadCancel.addEventListener('click', uploadCancelClickHandler);
+uploadFile.addEventListener('change', uploadFileChangeClickHandler);
+
+// вешаем слушатель события на документ для открытия больших фоток - not working
+document.addEventListener('click', function (evt) {
+  if (evt.target.classList.contains('picture__img')) {
+    showBigPicture(evt.target.src);
+  }
+});
+
+bigPictureBtnClose.addEventListener('click', hideBigPicture);
+bigPicture.addEventListener('keydown', bigPictureKeydownHandler);
+
+// Словарь эффектов с названиями и значениями
+var EffectsMap = {
+  none: {
+    className: '',
+    calcFilterValue: function () {
+      return null;
+    }
+  },
+  chrome: {
+    className: 'effects__preview--chrome',
+    calcFilterValue: function (value) {
+      return 'grayscale(' + value / 100 + ')';
+    }
+  },
+  sepia: {
+    className: 'effects__preview--sepia',
+    calcFilterValue: function (value) {
+      return 'sepia(' + value / 100 + ')';
+    }
+  },
+  marvin: {
+    className: 'effects__preview--marvin',
+    calcFilterValue: function (value) {
+      return 'invert(' + value + '%)';
+    }
+  },
+  phobos: {
+    className: 'effects__preview--phobos',
+    calcFilterValue: function (value) {
+      return 'blur(' + value / 100 * 3 + 'px)';
+    }
+  },
+  heat: {
+    className: 'effects__preview--heat',
+    calcFilterValue: function (value) {
+      return 'brightness(' + (1 + value / 100 * 2) + ')';
+    }
+  }
+};
+
+/**
+ * Применяем эффект к фотке в зависимости от выбранного в списке эффектов ниже (с классом effects__item)
+ */
+var applyEffect = function () {
+  var currentEffect = document.querySelector('.effects__radio:checked').value;
+  imagePreviewImg.className = EffectsMap[currentEffect].className;
+  imagePreviewImg.style.filter = EffectsMap[currentEffect].calcFilterValue(scaleValue.value);
+  if (currentEffect === 'none') {
+    imageSlider.classList.add('hidden');
+  } else if (imageSlider.classList.contains('hidden')) {
+    imageSlider.classList.remove('hidden');
+  }
+};
+
+/**
+ * Находим и возврщаем уровень эффекта
+ * @return {integer} - значение уровня эффекта
+ */
+var calcEffectScale = function () {
+  var scaleLineEl = document.querySelector('.scale__line');
+  var scaleLevelEl = document.querySelector('.scale__level');
+  var maxValue = scaleLineEl.offsetWidth;
+  var currentValue = scaleLevelEl.offsetWidth - scalePin.offsetWidth / 2;
+  return Math.round(currentValue / maxValue * 100);
+};
+
+var scalePinMouseupHandler = function () {
+  scaleValue.value = calcEffectScale();
+  applyEffect();
+};
+
+var effectsControlChangeHandler = function () {
+  scaleValue.value = 100;
+  applyEffect();
+};
+
+scalePin.addEventListener('mouseup', scalePinMouseupHandler);
+// Обработчик события для эффектов
+effectControls.forEach(function (control) {
+  control.addEventListener('change', effectsControlChangeHandler);
+});
+
+/**
+ * При неверном заполнении элемента - показываем данную функцию
+ * @param  {Node} element - неправильно заполненное поле формы
+ * @param  {string} message - сообщение пользователю, указывающее на неверно заполненное поле
+ */
+var setErrorState = function (element, message) {
+  element.style.borderColor = 'red';
+  element.style.borderWidth = '3px';
+  element.setCustomValidity(message);
+};
+/**
+ * Функиця, кот. будет отрабатывать, если поле формы заполнено верно
+ * @param  {Node} element - верно заполенное поле
+ */
+var setOrdinaryState = function (element) {
+  element.style.borderColor = 'yellow';
+  element.setCustomValidity('');
+};
+
+var uploadHashtagsEl = document.querySelector('.text__hashtags'); // поле для ввода ХэшТэегов
+// Ставим обработчик события и проверяем валидность поле ввода ХэшТэгов по критериям в ТЗ
+uploadHashtagsEl.addEventListener('change', function (evt) {
+  var hashtags = evt.currentTarget.value.toLowerCase().split(' ');
+  var j;
+
+  if (hashtags.length > Hashtag.MAX_СOUNT) {
+    setErrorState(evt.target, 'Максимальное число ХэшТэгов - ' + Hashtag.MAX_COUNT);
+    return;
+  } else {
+    setOrdinaryState(evt.target);
+  }
+
+  for (var i = 0; i < hashtags.length; i++) {
+    if (hashtags[i][0] !== Hashtag.STARTING_SYMBOL) {
+      setErrorState(evt.target, 'ХэшТэг должне начинаться со знака #');
+      return;
+    } else {
+      setOrdinaryState(evt.target);
+    }
+
+    if (hashtags[i].length > Hashtag.MAX_LENGTH) {
+      setErrorState(evt.target, 'Максимальная длина хэштэга - ' + Hashtag.MAX_LENGTH + ' символов');
+      return;
+    } else {
+      setOrdinaryState(evt.target);
+    }
+
+    for (j = 0; j < hashtags.length; j++) {
+      if (hashtags[i] === hashtags[j] && i !== j) {
+        setErrorState(evt.target, 'ХэшТэги не должны повторяться!');
+        return;
+      } else {
+        setOrdinaryState(evt.target);
+      }
+    }
+
+    for (j = 0; j < hashtags.length; j++) {
+      if (hashtags[i][j] === Hashtag.STARTING_SYMBOL && j !== 0) {
+        setErrorState(evt.target, 'Хэштэги должны разделяться пробелами');
+        return;
+      } else {
+        setOrdinaryState(evt.target);
+      }
+    }
+  }
+});
