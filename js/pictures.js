@@ -253,8 +253,11 @@ var hideBigPicture = function () {
   document.removeEventListener('keydown', bigPictureKeydownHandler);
 };
 
+// Закрытие оверлэя по нажатии на ESC (при этом если поле ввода ХэшТэегов и поле Описание в фокусе - закрытие не происходит)
 var uploadCancelKeydownHandler = function (evt) {
-  if (evt.keyCode === KeyCodes.ESC) {
+  if (evt.keyCode === KeyCodes.ESC &&
+    evt.target !== document.querySelector('.text__hashtags') &&
+    evt.target !== document.querySelector('.text__description')) {
     uploadCancelClickHandler();
   }
 };
@@ -310,6 +313,7 @@ var onResizeControlClick = function (evt) {
 uploadCancel.addEventListener('click', uploadCancelClickHandler);
 uploadFile.addEventListener('change', uploadFileChangeClickHandler);
 
+// вешаем слушатель события на документ для открытия больших фоток - not working
 document.addEventListener('click', function (evt) {
   if (evt.target.classList.contains('picture__img')) {
     showBigPicture(evt.target.src);
@@ -396,7 +400,7 @@ var effectsControlChangeHandler = function () {
 };
 
 scalePin.addEventListener('mouseup', scalePinMouseupHandler);
-
+// Обработчик события для эффектов
 effectControls.forEach(function (control) {
   control.addEventListener('change', effectsControlChangeHandler);
 });
@@ -420,13 +424,8 @@ var setOrdinaryState = function (element) {
   element.setCustomValidity('');
 };
 
-var uploadHashtagsEl = document.querySelector('.text__hashtags');
-uploadHashtagsEl.addEventListener('focus', function (evt) {
-  if (evt.target === uploadHashtagsEl) {
-    document.removeEventListener('keydown', uploadCancelKeydownHandler);
-  }
-});
-
+var uploadHashtagsEl = document.querySelector('.text__hashtags'); // поле для ввода ХэшТэегов
+// Ставим обработчик события и проверяем валидность поле ввода ХэшТэгов по критериям в ТЗ
 uploadHashtagsEl.addEventListener('change', function (evt) {
   var hashtags = evt.currentTarget.value.toLowerCase().split(' ');
   var j;
