@@ -7,5 +7,5 @@
 
 Репозиторий создан для обучения на интенсивном онлайн‑курсе «[Профессиональный JavaScript](https://htmlacademy.ru/intensive/javascript)», уровень 1 от [HTML Academy](https://htmlacademy.ru).
 
-[travis-image]: https://travis-ci.org/htmlacademy-javascript/544023-kekstagram.svg?branch=master
-[travis-url]: https://travis-ci.org/htmlacademy-javascript/544023-kekstagram
+[travis-image]: https://travis-ci.org/Manimall/544023-kekstagram.svg?branch=master
+[travis-url]: https://travis-ci.org/Manimall/544023-kekstagram
