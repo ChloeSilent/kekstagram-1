@@ -26,14 +26,10 @@
 
   var renderPicturesSet = function (data) {
     var fragment = document.createDocumentFragment();
-    // data.forEach(function (photo) {
-    //   var pictureElement = renderPictureElement(photo, pictureClickHandler);
-    //   fragment.appendChild(pictureElement);
-    // });
-    for (var i = 0; i < data.length; i++) {
-      var pictureElement = renderPictureElement(data[i], pictureClickHandler);
+    data.forEach(function (photo) {
+      var pictureElement = renderPictureElement(photo, pictureClickHandler);
       fragment.appendChild(pictureElement);
-    }
+    });
     return fragment;
   };
 
