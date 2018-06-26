@@ -24,7 +24,7 @@
 
   var pictureClickHandler = window.preview.showBigPictureElement;
 
-  var renderPicturesSet = function (data) {
+  var insertPhotos = function (data) {
     var fragment = document.createDocumentFragment();
     data.forEach(function (photo) {
       var pictureElement = renderPictureElement(photo, pictureClickHandler);
@@ -34,7 +34,7 @@
   };
 
   var randomPhotosSet = window.data.createArrayOfPhotos;
-  var photosSetFragment = renderPicturesSet(randomPhotosSet);
+  var photosSetFragment = insertPhotos(randomPhotosSet);
 
   picturesList.appendChild(photosSetFragment);
 })();
