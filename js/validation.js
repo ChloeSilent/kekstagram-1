@@ -29,6 +29,7 @@
   };
 
   var hashTagsElement = document.querySelector('.text__hashtags'); // поле для ввода ХэшТэегов
+  // var description = document.querySelector('.text__description'); // поле для ввода комментария
 
   var onHashTagInput = function (evt) {
     var hashtags = evt.currentTarget.value.toLowerCase().split(' ');
