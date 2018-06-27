@@ -31,8 +31,8 @@
   var hashTagsElement = document.querySelector('.text__hashtags'); // поле для ввода ХэшТэегов
   // var description = document.querySelector('.text__description'); // поле для ввода комментария
 
-  var moreThanOnce = function (list, item) {
-    return list.reduce(function (acc, elem) {
+  var checkSimilarHashtags = function (arr, item) {
+    return arr.reduce(function (acc, elem) {
       return elem.toLowerCase() === item.toLowerCase() ? acc + 1 : acc;
     }, 0) !== 1;
   };
@@ -50,7 +50,7 @@
     hashtags.forEach(function (hashtag) {
       if (hashtag.indexOf(Hashtag.STARTING_SYMBOL) !== 0) {
         setErrorState(evt.target, 'ХэшТег должен начинаться со знака #');
-      } else if (moreThanOnce(hashtags, hashtag)) {
+      } else if (checkSimilarHashtags(hashtags, hashtag)) {
         setErrorState(evt.target, 'ХэшТеги не должны повторяться!');
       } else if (hashtag.length > Hashtag.MAX_LENGTH) {
         setErrorState(evt.target, 'Максимальная длина ХэшТега - ' + Hashtag.MAX_LENGTH + ' символов');
