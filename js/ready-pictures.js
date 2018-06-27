@@ -4,20 +4,20 @@
   var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных фоток
   var photoTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // шаблон, из которого мы берем прототип нашей фотки
 
-  var renderPictureElement = function (photo, clickHandler) {
+  var renderPictureElement = function (photo, cb) {
     var pictureElement = photoTemplate.cloneNode(true);
 
     var pictureImage = pictureElement.querySelector('.picture__img');
     var pictureLikes = pictureElement.querySelector('.picture__stat--likes');
-    var pictureComents = pictureElement.querySelector('.picture__stat--comments');
+    var pictureComments = pictureElement.querySelector('.picture__stat--comments');
 
     pictureElement.dataset.id = photo.id;
     pictureImage.src = photo.url;
     pictureLikes.textContent = photo.likes;
-    pictureComents.textContent = photo.comments.length;
+    pictureComments.textContent = photo.comments.length;
     pictureElement.addEventListener('click', function (evt) {
       evt.preventDefault();
-      clickHandler(photo);
+      cb(photo);
     });
     return pictureElement;
   };

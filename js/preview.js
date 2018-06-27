@@ -24,7 +24,7 @@
     return commentElement;
   };
 
-  var renderComent = function (commentText, avatarUrl) {
+  var renderComment = function (commentText, avatarUrl) {
     var commentElement = makeCommentTemplate();
     var avatarElement = commentElement.querySelector('.social__picture');
 
@@ -34,29 +34,34 @@
     return commentElement;
   };
 
+  var createNewComment = function (photo) {
+    var pictureCommentsList = bigPictureElement.querySelector('.social__comments');
+
+    while (pictureCommentsList.firstChild) {
+      pictureCommentsList.removeChild(pictureCommentsList.firstChild);
+    }
+
+    photo['comments'].forEach(function (comment) {
+      var commentText = comment;
+      var avatarUrl = 'img/avatar-' + window.helpers.getRandomNumber(MIN_AVATARS, MAX_AVATARS) + '.svg';
+      pictureCommentsList.appendChild(renderComment(commentText, avatarUrl));
+    });
+  };
+
   var showBigPictureElement = function (photo) {
     var pictureImage = bigPictureElement.querySelector('.big-picture__img img');
     var pictureLikes = bigPictureElement.querySelector('.likes-count');
-    var pictureComentsCount = bigPictureElement.querySelector('.comments-count');
-    var pictureComentsList = bigPictureElement.querySelector('.social__comments');
+    var pictureCommentsCount = bigPictureElement.querySelector('.comments-count');
 
     pictureImage.src = photo.url;
     pictureLikes.textContent = photo.likes;
-    pictureComentsCount.textContent = photo.comments.length;
-
-    while (pictureComentsList.firstChild) {
-      pictureComentsList.removeChild(pictureComentsList.firstChild);
-    }
-    for (var i = 0; i < photo.comments.length; i++) {
-      var commentText = photo.comments[i];
-      var avatarUrl = 'img/avatar-' + window.helpers.getRandomNumber(MIN_AVATARS, MAX_AVATARS) + '.svg';
-      pictureComentsList.appendChild(renderComent(commentText, avatarUrl));
-    }
+    pictureCommentsCount.textContent = photo.comments.length;
 
     var social = bigPictureElement.querySelector('.social');
     social.querySelector('.social__loadmore').classList.add('visually-hidden');
     social.querySelector('.social__comment-count').classList.add('visually-hidden');
 
+    createNewComment(photo);
     window.helpers.toggleOverlay(bigPictureElement, onBigPictureEscPress);
     bigPictureCancel.addEventListener('click', onBigPictureCancelClick);
   };

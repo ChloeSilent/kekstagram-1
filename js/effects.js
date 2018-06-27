@@ -51,6 +51,8 @@
   };
 
   var applyEffect = function (toDefault) {
+    document.querySelector('input[id="effect-none"]').setAttribute('checked', 'checked');
+
     var currentEffect = document.querySelector('.effects__radio:checked').value;
 
     if (currentEffect === 'none') {
