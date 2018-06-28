@@ -102,7 +102,6 @@
       scaleLevelElement.style.width = (scaleLevelElement.offsetWidth - shiftX) + 'px';
 
       scaleValueElement.value = calcEffectScale();
-      // console.log(scaleValueElement.value);
       applyEffect();
     };
 

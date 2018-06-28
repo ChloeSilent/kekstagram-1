@@ -76,7 +76,7 @@
   };
 
   var onBigPictureEscPress = function (evt) {
-    if (evt.keyCode === window.helpers.KeyCodes.ESC) {
+    if (evt.keyCode === window.helpers.KeyCode.ESC) {
       hideBigPictureElement();
     }
   };

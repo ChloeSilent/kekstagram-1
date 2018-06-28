@@ -1,13 +1,13 @@
 'use strict';
 
 (function () {
-  var KeyCodes = {
+  var KeyCode = {
     ESC: 27,
     ENTER: 13
   };
 
   window.helpers = {
-    KeyCodes: KeyCodes,
+    KeyCode: KeyCode,
 
     /**
      * Генерация случайного числа

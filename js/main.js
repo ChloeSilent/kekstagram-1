@@ -28,7 +28,7 @@
   };
 
   var onUploadFileEscPress = function (evt) {
-    if (evt.keyCode === window.helpers.KeyCodes.ESC &&
+    if (evt.keyCode === window.helpers.KeyCode.ESC &&
       evt.target !== document.querySelector('.text__hashtags') &&
       evt.target !== document.querySelector('.text__description')) {
       hideImageUploadElement();
