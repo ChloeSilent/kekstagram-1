@@ -21,9 +21,10 @@
 
   var hideImageUploadElement = function () {
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
-    // uploadFileElement.value = '';
+    uploadFileElement.value = '';
     imageUploadForm.reset();
-    window.validation.onHashTagInput();
+    window.effects.applyEffect();
+    // window.validation.onHashTagInput();
   };
 
   var showUploadErrorBlock = function () {
@@ -46,7 +47,7 @@
     }
   };
 
-  var onSubmitImageUplodadForm = function (evt) {
+  var onSubmitImageUplodForm = function (evt) {
     evt.preventDefault();
 
     var onLoad = function () {
@@ -69,5 +70,5 @@
   uploadFileElement.addEventListener('change', onUploadFileChange);
   uploadCancedElement.addEventListener('click', onUploadCancelClick);
 
-  imageUploadForm.addEventListener('submit', onSubmitImageUplodadForm);
+  imageUploadForm.addEventListener('submit', onSubmitImageUplodForm);
 })();
