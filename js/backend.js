@@ -44,7 +44,7 @@
 
   var sendData = function (formData, onLoad, onError) {
     var request = makeXhrRequest(onLoad, onError);
-    request.open('POST', URL.POST);
+    request.open('POST', Url.POST);
     request.send(formData);
   };
 
