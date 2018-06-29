@@ -2,6 +2,11 @@
 
 (function () {
 
+  var NewPhotos = {
+    MIN: 0,
+    MAX: 10
+  }; // 10 случайных, не повторяющихся фотографий
+
   var ACTIVE_CLASS = 'img-filters__button--active';
 
   var sortsBlock = document.querySelector('.img-filters');
@@ -9,13 +14,16 @@
 
   var SortFunctions = {
     'filter-popular': function (data) {
-      return data.sort(function (a, b) {
-        return b.likes - a.likes;
-      });
+      return data;
+      // return data.sort(function (a, b) {
+      //   return b.likes - a.likes;
+      // });
     },
     'filter-new': function (data) {
       // return window.helpers.shuffleArray(data);
-      return data.reverse();
+      var miniData = window.helpers.shuffleArray(data).slice(NewPhotos.MIN, NewPhotos.MAX);
+      return miniData;
+      // return data.reverse();
     },
     'filter-discussed': function (data) {
       return data.sort(function (a, b) {

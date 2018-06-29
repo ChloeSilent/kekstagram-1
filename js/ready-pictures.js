@@ -11,7 +11,7 @@
     var pictureLikes = pictureElement.querySelector('.picture__stat--likes');
     var pictureComments = pictureElement.querySelector('.picture__stat--comments');
 
-    pictureElement.dataset.id = photo.id;
+    // pictureElement.dataset.id = photo.id; // спросить про id
     pictureImage.src = photo.url;
     pictureLikes.textContent = photo.likes;
     pictureComments.textContent = photo.comments.length;
