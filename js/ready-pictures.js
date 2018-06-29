@@ -22,19 +22,40 @@
     return pictureElement;
   };
 
-  var pictureClickHandler = window.preview.showBigPictureElement;
-
   var insertPhotos = function (data) {
     var fragment = document.createDocumentFragment();
-    data.forEach(function (photo) {
-      var pictureElement = renderPictureElement(photo, pictureClickHandler);
+    data.forEach(function (element) {
+      var pictureElement = renderPictureElement(element, function (photo) {
+        window.preview.showBigPictureElement(photo);
+      });
       fragment.appendChild(pictureElement);
     });
     return fragment;
   };
 
-  var randomPhotosSet = window.data.createArrayOfPhotos;
-  var photosSetFragment = insertPhotos(randomPhotosSet);
+  var loadNewPictures = function (data) {
+    var photosFragment = insertPhotos(data);
 
-  picturesList.appendChild(photosSetFragment);
+    document.querySelectorAll('.picture__link').forEach(function (link) {
+      link.parentNode.removeChild(link);
+    });
+
+    picturesList.appendChild(photosFragment);
+  };
+
+  var onLoad = function (data) {
+    loadNewPictures(data);
+    window.showSorts(data, loadNewPictures);
+  };
+
+  var onError = function (err) {
+    window.showErrorMessage(err);
+  };
+
+  window.backend.downloadData(onLoad, onError);
+
+  // var randomPhotosSet = window.data.createArrayOfPhotos;
+  // var photosSetFragment = insertPhotos(randomPhotosSet);
+
+  // picturesList.appendChild(photosSetFragment);
 })();

@@ -20,6 +20,20 @@
     },
 
     /**
+     * Перемещиваем массив случайным образом
+     * @param  {Array} arr - исходный массив
+     * @return  {Array} - получившийся массив
+     */
+    shuffleArray: function (arr) {
+      var result = [];
+      while (arr.length > 0) {
+        var random = this.getRandomNumber(0, arr.length);
+        result.push(arr.splice(random, 1)[0]);
+      }
+      return result;
+    },
+
+    /**
      * Вспомогательная функция для сортировки массива в произвольном порядке
      * @return {integer} - псевдослучайное число из диапазона [0, 1), то есть, от 0 (включительно) до 1 (но не включая 1)
      */
