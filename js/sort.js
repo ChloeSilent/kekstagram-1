@@ -21,8 +21,10 @@
     },
     'filter-new': function (data) {
       // return window.helpers.shuffleArray(data);
+
       var miniData = window.helpers.shuffleArray(data).slice(NewPhotos.MIN, NewPhotos.MAX);
       return miniData;
+
       // return data.reverse();
     },
     'filter-discussed': function (data) {

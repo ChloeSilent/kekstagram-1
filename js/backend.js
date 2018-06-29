@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var TIMEOUT = 5000;
+  var TIMEOUT = 5000; // ms
 
   var Url = {
     POST: 'https://js.dump.academy/kekstagram', // отправляем данные на этот адрес через метод POST
@@ -30,7 +30,7 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
     });
 
     return xhr;
