@@ -1,13 +1,13 @@
 'use strict';
 
 (function () {
-  var KeyCodes = {
+  var KeyCode = {
     ESC: 27,
     ENTER: 13
   };
 
   window.helpers = {
-    KeyCodes: KeyCodes,
+    KeyCode: KeyCode,
 
     /**
      * Генерация случайного числа
@@ -17,6 +17,20 @@
      */
     getRandomNumber: function (min, max) {
       return Math.floor(min + Math.random() * (max + 1 - min));
+    },
+
+    /**
+     * Перемещиваем массив случайным образом
+     * @param  {Array} arr - исходный массив
+     * @return  {Array} - получившийся массив
+     */
+    shuffleArray: function (arr) {
+      var result = [];
+      while (arr.length > 0) {
+        var random = this.getRandomNumber(0, arr.length);
+        result.push(arr.splice(random, 1)[0]);
+      }
+      return result;
     },
 
     /**

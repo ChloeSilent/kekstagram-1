@@ -66,7 +66,7 @@
       var rightPositon = scaleLineElement.getBoundingClientRect().right;
 
       scalePinControl.style.left = rightPositon - leftPositon + 'px';
-      scaleLevelElement.style.width = rightPositon - leftPositon + 'px';
+      scaleLevelElement.style.width = rightPositon - leftPositon - scalePinControl.offsetWidth / 2 + 'px';
       scaleValueElement.value = calcEffectScale();
     }
 
@@ -102,7 +102,6 @@
       scaleLevelElement.style.width = (scaleLevelElement.offsetWidth - shiftX) + 'px';
 
       scaleValueElement.value = calcEffectScale();
-      // console.log(scaleValueElement.value);
       applyEffect();
     };
 

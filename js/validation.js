@@ -65,4 +65,8 @@
   };
 
   hashTagsElement.addEventListener('input', onHashTagInput);
+
+  window.validation = {
+    onHashTagInput: onHashTagInput
+  };
 })();

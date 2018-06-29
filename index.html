@@ -30,7 +30,7 @@
         <div class="img-upload__wrapper">
           <h2 class="img-upload__title visually-hidden">Загрузка фотографии</h2>
 
-          <form class="img-upload__form" id="upload-select-image" method="post" enctype="multipart/form-data" autocomplete="off">
+          <form class="img-upload__form" id="upload-select-image" action="https://js.dump.academy/kekstagram" method="post" enctype="multipart/form-data" autocomplete="off">
 
             <fieldset class="img-upload__start">
               <input type="file" id="upload-file" class="img-upload__input visually-hidden" name="filename" required>
@@ -111,7 +111,7 @@
 
                 <fieldset class="img-upload__text text">
                   <input class="text__hashtags" name="hashtags" placeholder="#хэш-тег">
-                  <textarea class="text__description" name="description" placeholder="Ваш комментарий..." maxlength="140"></textarea>
+                  <textarea class="text__description" name="description" maxlength="140" placeholder="Ваш комментарий..."></textarea>
                 </fieldset>
 
                 <button type="submit" class="img-upload__submit" id="upload-submit">Опубликовать</button>
@@ -207,13 +207,18 @@
     </div>
   </template>
 
+  <script src="js/backend.js"></script>
+  <script src="js/debounce.js"></script>
   <script src="js/helpers.js"></script>
-  <script src="js/data.js"></script>
+  <script src="js/error.js"></script>
+  <!-- <script src="js/data.js"></script> -->
   <script src="js/preview.js"></script>
+  <script src="js/sort.js"></script>
   <script src="js/ready-pictures.js"></script>
   <script src="js/resize.js"></script>
   <script src="js/effects.js"></script>
   <script src="js/validation.js"></script>
+  <script src="js/upload.js"></script>
   <script src="js/main.js"></script>
 
 </body>
