@@ -34,27 +34,6 @@
     },
 
     /**
-     * Вспомогательная функция для сортировки массива в произвольном порядке
-     * @return {integer} - псевдослучайное число из диапазона [0, 1), то есть, от 0 (включительно) до 1 (но не включая 1)
-     */
-    compareRandomElements: function () {
-      return Math.random() - 0.5;
-    },
-
-    /**
-     * Генерируем комментарии случайным образом, для каждого комментария берем 1 или 2 строки из массива COMMENTS
-     * @param {Array} initialArray - массив с изначальными данными
-     * @return {Array} - массив с одним или двумя комментариями
-     */
-    generateComment: function (initialArray) {
-      var commentsCopy = initialArray.slice();
-      commentsCopy.sort(this.compareRandomElements);
-
-      var commentsSmallCopy = commentsCopy.slice(0, this.getRandomNumber(1, 2));
-      return commentsSmallCopy;
-    },
-
-    /**
      * Переключаем оверлэй, добавляем/удаляем клавиатурный слушатель события на документе
      * @param  {Node} overlay - переключаемый оверлэй
      * @param  {function} escHandler - клавиатурный обработчик события
