@@ -24,7 +24,7 @@
      * @param {Array} arr - изначальный массив
      * @return {integer} - номер случайного объекта из массива
      */
-    getRandomInt: function (arr) {
+    getRandomEl: function (arr) {
       return Math.floor(Math.random() * arr.length);
     },
 
@@ -40,8 +40,8 @@
 
       var tempArr = [];
 
-      while (arr.length > 0) {
-        tempArr.push(arr.splice(window.helpers.getRandomInt(arr), 1)[0]);
+      while (arr.length - 1 > 0) {
+        tempArr.push(arr.splice(this.getRandomEl(arr), 1)[0]);
       }
 
       tempArr.push(arr[0]);
