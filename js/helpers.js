@@ -20,17 +20,32 @@
     },
 
     /**
-     * Перемещиваем массив случайным образом
+     * Генерация случайного объекта из массива
+     * @param {Array} arr - изначальный массив
+     * @return {integer} - номер случайного объекта из массива
+     */
+    getRandomInt: function (arr) {
+      return Math.floor(Math.random() * arr.length);
+    },
+
+
+    /**
+     * Перемещиваем массив случайным образом - Логика:
+     * Выбераем случайный индекс, добавляем соответствующий элемент в массив результатов и удаляем его из копии исходного массива;
+     * Повторяем это действие до тех пор, пока исходный массив не станет пустым
      * @param  {Array} arr - исходный массив
      * @return  {Array} - получившийся массив
      */
     shuffleArray: function (arr) {
-      var result = [];
+
+      var tempArr = [];
+
       while (arr.length > 0) {
-        var random = this.getRandomNumber(0, arr.length);
-        result.push(arr.splice(random, 1)[0]);
+        tempArr.push(arr.splice(window.helpers.getRandomInt(arr), 1)[0]);
       }
-      return result;
+
+      tempArr.push(arr[0]);
+      return tempArr;
     },
 
     /**
