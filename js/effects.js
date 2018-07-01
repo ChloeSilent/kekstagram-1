@@ -52,6 +52,7 @@
 
   var applyEffect = function (toDefault) {
     document.querySelector('input[id="effect-none"]').setAttribute('checked', 'checked');
+    document.querySelector('input[id="effect-heat"]').removeAttribute('checked');
 
     var currentEffect = document.querySelector('.effects__radio:checked').value;
 

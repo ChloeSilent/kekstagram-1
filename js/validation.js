@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  // перечисление для ХэшТэгов
+  // перечисление правил ограничения ввода ХэшТэгов
   var Hashtag = {
     MAX_COUNT: 5,
     STARTING_SYMBOL: '#',
@@ -9,64 +9,77 @@
     MIN_LENGTH: 2
   };
 
-  /**
-   * При неверном заполнении элемента - показываем данную функцию
-   * @param  {Node} element - неправильно заполненное поле формы
-   * @param  {string} message - сообщение пользователю, указывающее на неверно заполненное поле
-   */
-  var setErrorState = function (element, message) {
-    element.style.borderColor = 'red';
-    element.style.borderWidth = '4px';
-    element.setCustomValidity(message);
-  };
-  /**
-   * Функиця, кот. будет отрабатывать, если поле формы заполнено верно
-   * @param  {Node} element - верно заполенное поле
-   */
-  var setSuccessInput = function (element) {
-    element.style.borderColor = 'yellow';
-    element.setCustomValidity('');
+  // перечисление ошибок, возникающих при неверном вводе ХэшТэгов
+  var Error = {
+    MAX_COUNT: 'Максимальное число ХэшТегов - ' + Hashtag.MAX_COUNT,
+    FIRST_SYMBOL: 'Хэш-тег должен начинается с символа # (решётка)',
+    IDENTICAL_TAGS: 'Хэш-теги не должны повторяться!',
+    MAX_LENGTH_OF_ONE_TAG: 'Максимальная длина ХэшТега - ' + Hashtag.MAX_LENGTH + ' символов',
+    MIN_LENGTH_OF_ONE_TAG: 'ХэшТег не может содержать только решётку',
+    LACK_OF_SPACE: 'ХэшТеги должны разделяться пробелами'
   };
 
   var hashTagsElement = document.querySelector('.text__hashtags'); // поле для ввода ХэшТэегов
   // var description = document.querySelector('.text__description'); // поле для ввода комментария
 
-  var checkSimilarHashtags = function (arr, item) {
-    return arr.reduce(function (acc, elem) {
-      return elem.toLowerCase() === item.toLowerCase() ? acc + 1 : acc;
-    }, 0) !== 1;
+  /**
+   * При неверном заполнении элемента - показываем данную функцию
+   * @param  {string} message - сообщение пользователю, указывающее на неверно заполненное поле
+   */
+  var setErrorState = function (message) {
+    hashTagsElement.style.border = '4px solid rgba(255, 3, 62)';
+    hashTagsElement.setCustomValidity(message);
+  };
+  /**
+   * Функиця, кот. будет отрабатывать, если поле формы заполнено верно
+   */
+  var setSuccessInput = function () {
+    hashTagsElement.style.borderColor = 'yellow';
+    hashTagsElement.setCustomValidity('');
   };
 
-  var onHashTagInput = function (evt) {
-    var hashtags = evt.currentTarget.value.toLowerCase().split(' ');
+  var validateHashTagsField = function () {
+    // var hashtags = hashTagsElement.value.trim(); // очищаем оконечные пробелы
+    var hashtags = hashTagsElement.value.toLowerCase().split(' ').filter(function (item) {
+      return item;
+    });
+
+    hashtags[hashtags.length - 1].trim();
 
     if (hashtags.length > Hashtag.MAX_COUNT) {
-      setErrorState(evt.target, 'Максимальное число ХэшТегов - ' + Hashtag.MAX_COUNT);
+      setErrorState(Error.MAX_COUNT);
       return;
     } else {
-      setSuccessInput(evt.target);
+      setSuccessInput();
     }
 
-    hashtags.forEach(function (hashtag) {
-      if (hashtag.indexOf(Hashtag.STARTING_SYMBOL) !== 0) {
-        setErrorState(evt.target, 'ХэшТег должен начинаться со знака #');
-      } else if (checkSimilarHashtags(hashtags, hashtag)) {
-        setErrorState(evt.target, 'ХэшТеги не должны повторяться!');
-      } else if (hashtag.length > Hashtag.MAX_LENGTH) {
-        setErrorState(evt.target, 'Максимальная длина ХэшТега - ' + Hashtag.MAX_LENGTH + ' символов');
-      } else if (hashtag.length < Hashtag.MIN_LENGTH) {
-        setErrorState(evt.target, 'ХэшТег не может содержать только решётку');
-      } else if (hashtag.lastIndexOf(Hashtag.STARTING_SYMBOL) !== 0) {
-        setErrorState(evt.target, 'ХэшТеги должны разделяться пробелами');
+    hashtags.every(function (tag, index) {
+      if (tag.indexOf(Hashtag.STARTING_SYMBOL) !== 0) {
+        return setErrorState(Error.FIRST_SYMBOL);
+      } else if (hashtags.includes(tag, index + 1)) {
+        return setErrorState(Error.IDENTICAL_TAGS);
+      } else if (tag.length > Hashtag.MAX_LENGTH) {
+        return setErrorState(Error.MAX_LENGTH_OF_ONE_TAG);
+      } else if (tag.length < Hashtag.MIN_LENGTH) {
+        return setErrorState(Error.MIN_LENGTH_OF_ONE_TAG);
+      } else if (tag.lastIndexOf(Hashtag.STARTING_SYMBOL) !== 0) {
+        return setErrorState(Error.LACK_OF_SPACE);
       } else {
-        setSuccessInput(evt.target);
+        return setSuccessInput();
       }
     });
   };
 
-  hashTagsElement.addEventListener('input', onHashTagInput);
+  var onHashTagsInput = function (evt) {
+    if (evt.target === hashTagsElement) {
+      validateHashTagsField();
+    }
+    evt.preventDefault();
+  };
+
+  hashTagsElement.addEventListener('input', onHashTagsInput);
 
   window.validation = {
-    onHashTagInput: onHashTagInput
+    setSuccessInput: setSuccessInput
   };
 })();

@@ -29,8 +29,8 @@
   };
 
   var hideErrorMessage = function () {
-    document.querySelector('error-message').classList.add('hidden');
-    // document.querySelector('.error-message').remove();
+    // document.querySelector('error-message').classList.add('hidden');
+    document.querySelector('.error-message').remove();
     document.removeEventListener('click', hideErrorMessage);
   };
 

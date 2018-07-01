@@ -23,8 +23,7 @@
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
     uploadFileElement.value = '';
     imageUploadForm.reset();
-    window.effects.applyEffect();
-    // window.validation.onHashTagInput();
+    window.validation.setSuccessInput();
   };
 
   var showUploadErrorBlock = function () {
@@ -62,7 +61,7 @@
 
     if (imageUploadForm.reportValidity()) {
       var formData = new FormData(imageUploadForm);
-      // imageUploadForm.submit();
+
       window.backend.sendData(formData, onLoad, onError);
     }
   };
