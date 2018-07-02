@@ -2,7 +2,7 @@
 
 (function () {
   var uploadFileElement = document.querySelector('#upload-file');
-  var uploadCancedElement = document.querySelector('#upload-cancel');
+  var uploadCancelElement = document.querySelector('#upload-cancel');
   var imageUploadElement = document.querySelector('.img-upload__overlay');
 
   var imageUploadForm = document.querySelector('.img-upload__form');
@@ -23,8 +23,7 @@
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
     uploadFileElement.value = '';
     imageUploadForm.reset();
-    window.effects.applyEffect();
-    // window.validation.onHashTagInput();
+    window.validation.setSuccessInput();
   };
 
   var showUploadErrorBlock = function () {
@@ -62,13 +61,13 @@
 
     if (imageUploadForm.reportValidity()) {
       var formData = new FormData(imageUploadForm);
-      // imageUploadForm.submit();
+
       window.backend.sendData(formData, onLoad, onError);
     }
   };
 
   uploadFileElement.addEventListener('change', onUploadFileChange);
-  uploadCancedElement.addEventListener('click', onUploadCancelClick);
+  uploadCancelElement.addEventListener('click', onUploadCancelClick);
 
   imageUploadForm.addEventListener('submit', onSubmitImageUplodForm);
 })();

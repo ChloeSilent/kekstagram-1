@@ -1,14 +1,14 @@
 'use strict';
 
 (function () {
-  var DEBOUNCE_INTERVAL = 1000; // ms
+  var DEBOUNCE_INTERVAL = 500; // ms - отрисовка изображений производится не чаще, чем один раз в полсекунды
   var lastTimeout;
 
-  var debounce = function (fun) {
+  var debounce = function (cb) {
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }
-    lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
+    lastTimeout = window.setTimeout(cb, DEBOUNCE_INTERVAL);
   };
 
   window.debounce = debounce;
