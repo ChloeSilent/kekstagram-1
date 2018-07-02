@@ -30,6 +30,7 @@
     hashTagsElement.style.border = '4px solid rgba(255, 3, 62)';
     hashTagsElement.setCustomValidity(message);
   };
+
   /**
    * Функиця, кот. будет отрабатывать, если поле формы заполнено верно
    */
@@ -39,33 +40,35 @@
   };
 
   var validateHashTagsField = function () {
-    // var hashtags = hashTagsElement.value.trim(); // очищаем оконечные пробелы
-    var hashtags = hashTagsElement.value.toLowerCase().split(' ').filter(function (item) {
+    var hashtags = hashTagsElement.value.trim(); // очищаем оконечные пробелы
+    hashtags = hashTagsElement.value.toLowerCase().split(' ').filter(function (item) {
       return item;
     });
-
-    hashtags[hashtags.length - 1].trim();
 
     if (hashtags.length > Hashtag.MAX_COUNT) {
       setErrorState(Error.MAX_COUNT);
       return;
-    } else {
-      setSuccessInput();
     }
 
     hashtags.every(function (tag, index) {
       if (tag.indexOf(Hashtag.STARTING_SYMBOL) !== 0) {
-        return setErrorState(Error.FIRST_SYMBOL);
+        setErrorState(Error.FIRST_SYMBOL);
+        return false;
       } else if (hashtags.includes(tag, index + 1)) {
-        return setErrorState(Error.IDENTICAL_TAGS);
+        setErrorState(Error.IDENTICAL_TAGS);
+        return false;
       } else if (tag.length > Hashtag.MAX_LENGTH) {
-        return setErrorState(Error.MAX_LENGTH_OF_ONE_TAG);
+        setErrorState(Error.MAX_LENGTH_OF_ONE_TAG);
+        return false;
       } else if (tag.length < Hashtag.MIN_LENGTH) {
-        return setErrorState(Error.MIN_LENGTH_OF_ONE_TAG);
+        setErrorState(Error.MIN_LENGTH_OF_ONE_TAG);
+        return false;
       } else if (tag.lastIndexOf(Hashtag.STARTING_SYMBOL) !== 0) {
-        return setErrorState(Error.LACK_OF_SPACE);
+        setErrorState(Error.LACK_OF_SPACE);
+        return false;
       } else {
-        return setSuccessInput();
+        setSuccessInput();
+        return true;
       }
     });
   };
@@ -78,6 +81,12 @@
   };
 
   hashTagsElement.addEventListener('input', onHashTagsInput);
+  // hashTagsElement.addEventListener('blur', function (evt) {
+  //   if (evt.target !== hashTagsElement) {
+  //     validateHashTagsField();
+  //     hashTagsElement.checkValidity();
+  //   }
+  // }, true);
 
   window.validation = {
     setSuccessInput: setSuccessInput

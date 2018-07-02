@@ -2,7 +2,7 @@
 
 (function () {
   var uploadFileElement = document.querySelector('#upload-file');
-  var uploadCancedElement = document.querySelector('#upload-cancel');
+  var uploadCancelElement = document.querySelector('#upload-cancel');
   var imageUploadElement = document.querySelector('.img-upload__overlay');
 
   var imageUploadForm = document.querySelector('.img-upload__form');
@@ -67,7 +67,7 @@
   };
 
   uploadFileElement.addEventListener('change', onUploadFileChange);
-  uploadCancedElement.addEventListener('click', onUploadCancelClick);
+  uploadCancelElement.addEventListener('click', onUploadCancelClick);
 
   imageUploadForm.addEventListener('submit', onSubmitImageUplodForm);
 })();
