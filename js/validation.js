@@ -20,11 +20,10 @@
   };
 
   var hashTagsElement = document.querySelector('.text__hashtags'); // поле для ввода ХэшТэегов
-  // var description = document.querySelector('.text__description'); // поле для ввода комментария
 
   /**
    * При неверном заполнении элемента - показываем данную функцию
-   * @param  {string} message - сообщение пользователю, указывающее на неверно заполненное поле
+   * @param  {string} message - сообщение пользователю, указывающее ошибку в неверно заполненном поле
    */
   var setErrorState = function (message) {
     hashTagsElement.style.border = '4px solid rgba(255, 3, 62)';
@@ -39,6 +38,9 @@
     hashTagsElement.setCustomValidity('');
   };
 
+  /**
+   * Функция, проверяющая ввод пользователем ХэшТэгов по критериям ТЗ
+   */
   var validateHashTagsField = function () {
     var hashtags = hashTagsElement.value.trim(); // очищаем оконечные пробелы
     hashtags = hashTagsElement.value.toLowerCase().split(' ').filter(function (item) {
@@ -73,6 +75,10 @@
     });
   };
 
+  /**
+   * Проверяем поле, в которое пользователь вводит теги
+   * @param {Object} evt - объект события
+   */
   var onHashTagsInput = function (evt) {
     if (evt.target === hashTagsElement) {
       validateHashTagsField();
@@ -80,13 +86,14 @@
     evt.preventDefault();
   };
 
+  // обработчики событий
   hashTagsElement.addEventListener('input', onHashTagsInput);
-  // hashTagsElement.addEventListener('blur', function (evt) {
-  //   if (evt.target !== hashTagsElement) {
-  //     validateHashTagsField();
-  //     hashTagsElement.checkValidity();
-  //   }
-  // }, true);
+  hashTagsElement.addEventListener('blur', function (evt) {
+    if (evt.target === hashTagsElement) {
+      validateHashTagsField();
+      hashTagsElement.checkValidity();
+    }
+  }, true);
 
   window.validation = {
     setSuccessInput: setSuccessInput
