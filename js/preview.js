@@ -5,7 +5,7 @@
   var MIN_AVATARS = 1; // мин. кол-во фоток аватаров пользователей
 
   var bigPictureElement = document.querySelector('.big-picture');
-  var bigPictureCancel = bigPictureElement.querySelector('.big-picture__cancel');
+  var bigPictureCancelElement = bigPictureElement.querySelector('.big-picture__cancel');
 
   /**
    * Создаем шаблон комментария
@@ -85,7 +85,7 @@
     document.querySelector('body').classList.add('modal-open');
 
     window.helpers.toggleOverlay(bigPictureElement, onBigPictureEscPress);
-    bigPictureCancel.addEventListener('click', onBigPictureCancelClick);
+    bigPictureCancelElement.addEventListener('click', onBigPictureCancelClick);
   };
 
   /**
@@ -93,7 +93,7 @@
    */
   var hideBigPictureElement = function () {
     window.helpers.toggleOverlay(bigPictureElement, onBigPictureEscPress);
-    bigPictureCancel.removeEventListener('click', onBigPictureCancelClick);
+    bigPictureCancelElement.removeEventListener('click', onBigPictureCancelClick);
 
     document.querySelector('body').classList.remove('modal-open');
   };

@@ -10,8 +10,8 @@
   };
 
   // изменение масштаба фотки
-  var resizeControlPanel = document.querySelector('.img-upload__resize');
-  var resizeControlEl = document.querySelector('.resize__control--value');
+  var resizeControlPanelElement = document.querySelector('.img-upload__resize');
+  var resizeControlElement = document.querySelector('.resize__control--value');
   var imagePreviewElement = document.querySelector('.img-upload__preview');
 
   /**
@@ -19,7 +19,7 @@
    * @param {Object} evt - объект события, по которому мы определяем на какую кнопку (на + или -) нажал пользователь
    */
   var onResizeControlClick = function (evt) {
-    var currentValue = parseInt(resizeControlEl.value, 10);
+    var currentValue = parseInt(resizeControlElement.value, 10);
 
     if (evt.target.classList.contains('resize__control--minus')) {
       if (currentValue > Resize.MIN) {
@@ -33,19 +33,19 @@
 
     var scale = 'scale' + '(' + (currentValue / Resize.DEFAULT_VALUE) + ')';
     imagePreviewElement.style.transform = scale;
-    resizeControlEl.value = currentValue + '%';
+    resizeControlElement.value = currentValue + '%';
   };
 
   /**
-   * Возвращаем resizeControlEl в исходное состояние (100%), сбрасываем трансформацию изображения
+   * Возвращаем resizeControlElement в исходное состояние (100%), сбрасываем трансформацию изображения
    */
   var setDefaultSize = function () {
-    resizeControlEl.value = Resize.DEFAULT_VALUE + '%';
+    resizeControlElement.value = Resize.DEFAULT_VALUE + '%';
     imagePreviewElement.style.transform = null;
   };
 
   // вешаем обработчик события на панель управления масштабом
-  resizeControlPanel.addEventListener('click', onResizeControlClick, true);
+  resizeControlPanelElement.addEventListener('click', onResizeControlClick, true);
 
   window.resize = {
     setDefaultSize: setDefaultSize

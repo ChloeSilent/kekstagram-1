@@ -5,7 +5,7 @@
   var uploadCancelElement = document.querySelector('#upload-cancel');
   var imageUploadElement = document.querySelector('.img-upload__overlay');
 
-  var imageUploadForm = document.querySelector('.img-upload__form');
+  var imageUploadFormElement = document.querySelector('.img-upload__form');
 
   /**
    * Показываем загруженный пользователем файл, ставим масштаб файла + эффект по умолчанию
@@ -28,7 +28,7 @@
   var hideImageUploadElement = function () {
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
     uploadFileElement.value = '';
-    imageUploadForm.reset();
+    imageUploadFormElement.reset();
     window.validation.setSuccessInput();
   };
 
@@ -78,7 +78,7 @@
     evt.preventDefault();
 
     var onLoad = function () {
-      imageUploadForm.reset();
+      imageUploadFormElement.reset();
       hideImageUploadElement();
     };
 
@@ -87,8 +87,8 @@
       showUploadErrorBlock();
     };
 
-    if (imageUploadForm.reportValidity()) {
-      var formData = new FormData(imageUploadForm);
+    if (imageUploadFormElement.reportValidity()) {
+      var formData = new FormData(imageUploadFormElement);
 
       window.backend.sendData(formData, onLoad, onError);
     }
@@ -98,5 +98,5 @@
   uploadFileElement.addEventListener('change', onUploadFileChange);
   uploadCancelElement.addEventListener('click', onUploadCancelClick);
 
-  imageUploadForm.addEventListener('submit', onSubmitImageUplodForm);
+  imageUploadFormElement.addEventListener('submit', onSubmitImageUplodForm);
 })();
