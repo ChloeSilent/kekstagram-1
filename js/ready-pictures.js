@@ -4,6 +4,12 @@
   var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных фоток
   var photoTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // шаблон, из которого мы берем прототип нашей фотки
 
+  /**
+   * Создаем DOM-элементы для фоток, заполняем их данными
+   * @param  {Object} photo - обьект для заполнения данными
+   * @param  {cb} cb - функция коллбэк - обработчик события, открывающий полную версию фото
+   * @return {Object} - обьект с заполненными данными
+   */
   var renderPictureElement = function (photo, cb) {
     var pictureElement = photoTemplate.cloneNode(true);
 
@@ -11,7 +17,6 @@
     var pictureLikes = pictureElement.querySelector('.picture__stat--likes');
     var pictureComments = pictureElement.querySelector('.picture__stat--comments');
 
-    // pictureElement.dataset.id = photo.id; // спросить про id
     pictureImage.src = photo.url;
     pictureLikes.textContent = photo.likes;
     pictureComments.textContent = photo.comments.length;
@@ -22,6 +27,11 @@
     return pictureElement;
   };
 
+  /**
+   * Вставляем подготовленный шаблон с данными во fragment
+   * @param  {Array} data - массив данных (массив фоток)
+   * @return {Node} - фрагмент с заполненным данными шаблоном, который мы вставляем в разметку через метод createDocumentFragment()
+   */
   var insertPhotos = function (data) {
     var fragment = document.createDocumentFragment();
     data.forEach(function (element) {
@@ -33,6 +43,11 @@
     return fragment;
   };
 
+  /**
+   * Вставляем шаблон с заполненными данными на страницу в разметку в блок с классом .pictures,
+   * при этом удаляем лишние данные (а именно элемент с классом .picture__stats)
+   * @param  {Array} data - массив данных (массив фоток)
+   */
   var loadNewPictures = function (data) {
     var photosFragment = insertPhotos(data);
 
@@ -43,19 +58,22 @@
     picturesList.appendChild(photosFragment);
   };
 
+  /**
+   * Функция загрузки данных с сервера через XHR
+   * @param  {Array} data - массив данных (массив фотографий)
+   */
   var onLoad = function (data) {
     loadNewPictures(data);
     window.showSorts(data, loadNewPictures);
   };
 
+  /**
+   * В случае провала загрузки данных - показываем сообщение об ошибке
+   * @param  {string} err - текст сообщения
+   */
   var onError = function (err) {
     window.showErrorMessage(err);
   };
 
   window.backend.downloadData(onLoad, onError);
-
-  // var randomPhotosSet = window.data.createArrayOfPhotos;
-  // var photosSetFragment = insertPhotos(randomPhotosSet);
-
-  // picturesList.appendChild(photosSetFragment);
 })();

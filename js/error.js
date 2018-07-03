@@ -2,6 +2,10 @@
 
 (function () {
 
+  /**
+   * Показываем сообщения об ошибках, произошедших по ходу загрузки данных с сервера
+   * @param  {string} err - текст ошибки
+   */
   var showErrorMessage = function (err) {
     var errorBlock = document.createElement('div');
     errorBlock.classList.add('error-message');
@@ -19,7 +23,6 @@
     errorText.style.fontWeight = 'bold';
     errorText.style.fontSize = '24px';
     errorText.style.margin = '20px auto';
-    // errorText.textContent = 'Ошибка при загрузке данных';
     errorText.textContent = err;
 
     errorBlock.appendChild(errorText);
@@ -28,8 +31,10 @@
     document.addEventListener('click', hideErrorMessage);
   };
 
+  /**
+   * Удаляем сообщение об ошибке
+   */
   var hideErrorMessage = function () {
-    // document.querySelector('error-message').classList.add('hidden');
     document.querySelector('.error-message').remove();
     document.removeEventListener('click', hideErrorMessage);
   };
