@@ -1,11 +1,15 @@
 'use strict';
 
 (function () {
-  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png']; // форматы файлов для загрузки
 
   var imagePreview = document.querySelector('.img-upload__preview img');
   var effectsPreviews = document.querySelectorAll('.effects__preview');
 
+  /**
+   * устанавливаем верный photoSrc для загружаемой картинки, которая хранится в imagePreview
+   * @param  {string} photoSrc - адрес загружаемого файла
+   */
   var changePreviewImages = function (photoSrc) {
     imagePreview.src = photoSrc;
 
@@ -14,6 +18,13 @@
     });
   };
 
+  /**
+   * Загружаем файл в поле с id="upload-file" через метод files,
+   * проверяем его формат, по окончании загрузки читаем его содержимое через fileReader
+   * @param  {Object} uploadFileElement - загружаемый пользователем файл
+   * @return {boolean} true - при успешной загрузке,
+   * false - при неверном формате файла, + показываем ошибку
+   */
   var loadUserFile = function (uploadFileElement) {
     var file = uploadFileElement.files[0];
     var fileName = file.name.toLowerCase();
@@ -33,7 +44,9 @@
       changePreviewImages(reader.result);
     });
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file); // Запускаем процесс чтения данных указанного Blob, по завершении процесса,
+    // аттрибут result будет содержать данные файла в виде data: URL
+
     return true;
   };
 

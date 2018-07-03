@@ -21,7 +21,7 @@
 
     /**
      * Генерация случайного объекта из массива
-     * @param {Array} arr - изначальный массив
+     * @param {Array} arr - массив
      * @return {integer} - номер случайного объекта из массива
      */
     getRandomEl: function (arr) {
@@ -51,7 +51,7 @@
     /**
      * Переключаем оверлэй, добавляем/удаляем клавиатурный слушатель события на документе
      * @param  {Node} overlay - переключаемый оверлэй
-     * @param  {function} escHandler - клавиатурный обработчик события
+     * @param  {function} escHandler - клавиатурный обработчик события (для нажатия на ESC)
      */
     toggleOverlay: function (overlay, escHandler) {
       if (overlay.classList.contains('hidden')) {

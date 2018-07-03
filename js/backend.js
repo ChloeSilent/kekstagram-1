@@ -20,7 +20,7 @@
     xhr.responseType = 'json';
 
     var HttpStatusCode = {
-      SUCCESS: 200
+      SUCCESS: 200 // код успешного выполнения запроса
     };
 
     xhr.addEventListener('load', function () {

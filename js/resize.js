@@ -36,11 +36,15 @@
     resizeControlEl.value = currentValue + '%';
   };
 
+  /**
+   * Возвращаем resizeControlEl в исходное состояние (100%), сбрасываем трансформацию изображения
+   */
   var setDefaultSize = function () {
     resizeControlEl.value = Resize.DEFAULT_VALUE + '%';
     imagePreviewElement.style.transform = null;
   };
 
+  // вешаем обработчик события на панель управления масштабом
   resizeControlPanel.addEventListener('click', onResizeControlClick, true);
 
   window.resize = {
