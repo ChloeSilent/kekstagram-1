@@ -11,6 +11,7 @@
   var scaleValueElement = document.querySelector('.scale__value');
   var imagePreviewImage = document.querySelector('.img-upload__preview img');
 
+  // имеющиеся эффекты
   var effectsMap = {
     none: {
       className: '',
@@ -50,6 +51,21 @@
     }
   };
 
+  /**
+   * Находим значение value у элемента с классом .scale__value
+   * @return {integer} - значение value
+   */
+  var calcEffectScale = function () {
+    var maxValue = scaleLineElement.offsetWidth;
+    var currentValue = scaleLevelElement.offsetWidth;
+    return Math.round(currentValue / maxValue * SCALE_DEFAULT_VALUE);
+  };
+
+  /**
+   * Изменяем выбор эффекта по умолчанию; удаляем слайдер насыщщености у эффекта по умолчанию;
+   * выставляем насыщщеность эффекта на максимум; добалвяем возможность переключать фильтры
+   * @param  {boolean} toDefault - ставим насыщенность эффекта и ползунок слайдера по умолчанию (на максимум) - если true)
+   */
   var applyEffect = function (toDefault) {
     document.querySelector('input[id="effect-none"]').setAttribute('checked', 'checked');
     document.querySelector('input[id="effect-heat"]').removeAttribute('checked');
@@ -75,12 +91,12 @@
     imagePreviewImage.style.filter = effectsMap[currentEffect].calcFilterValue(scaleValueElement.value);
   };
 
-  var calcEffectScale = function () {
-    var maxValue = scaleLineElement.offsetWidth;
-    var currentValue = scaleLevelElement.offsetWidth;
-    return Math.round(currentValue / maxValue * SCALE_DEFAULT_VALUE);
-  };
+  // добавляем подвижность слайдеру насыщенности эффекта
 
+  /**
+   * Функция перемещения контрола слайдера с классом scale__pin по оси Х
+   * @param  {Object} evt - объект события
+   */
   var onScalePinControlMousedown = function (evt) {
     evt.preventDefault();
 
@@ -89,6 +105,10 @@
     var leftBorder = linePosition.left;
     var rightBorder = linePosition.right;
 
+    /**
+     * Перемещаем контрол слайдера на определенное расстояние
+     * @param  {Object} moveEvt - объект события mousemove
+     */
     var onScalePinControlMousemove = function (moveEvt) {
       moveEvt.preventDefault();
 
@@ -106,6 +126,10 @@
       applyEffect();
     };
 
+    /**
+     * Отпускаем перетасикваемый объект (контрол слайдера), отписываемся от обработчиков mousemove и mouseup
+     * @param  {Object} upEvt - объект события mouseup
+     */
     var onScalePinControlMouseup = function (upEvt) {
       upEvt.preventDefault();
 
@@ -120,6 +144,9 @@
     document.addEventListener('mouseup', onScalePinControlMouseup);
   };
 
+  /**
+   * Изменяем насыщенность эффекта при перемещении ползунка слайдера
+   */
   var onEffectControlChange = function () {
     applyEffect(true);
   };
