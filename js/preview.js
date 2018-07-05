@@ -20,9 +20,9 @@
    */
   var removeOldComments = function () {
 
-    var removedComments = bigPictureElement.querySelectorAll('.social__comment');
+    var removedCommentsElement = bigPictureElement.querySelectorAll('.social__comment');
 
-    removedComments.forEach(function (oldComment) {
+    removedCommentsElement.forEach(function (oldComment) {
       commentsListElement.removeChild(oldComment);
     });
   };
@@ -81,14 +81,14 @@
    * @param  {Object} photo - объект, на основе которого будут изменяться данные
    */
   var showBigPictureElement = function (photo) {
-    var pictureImage = bigPictureElement.querySelector('.big-picture__img img');
-    var pictureLikes = bigPictureElement.querySelector('.likes-count');
-    var pictureCommentsCount = bigPictureElement.querySelector('.comments-count');
+    var pictureImageElement = bigPictureElement.querySelector('.big-picture__img img');
+    var pictureLikesElement = bigPictureElement.querySelector('.likes-count');
+    var pictureCommentsCountElement = bigPictureElement.querySelector('.comments-count');
 
     commentsData = photo.comments;
-    pictureImage.src = photo.url;
-    pictureLikes.textContent = photo.likes;
-    pictureCommentsCount.textContent = photo.comments.length;
+    pictureImageElement.src = photo.url;
+    pictureLikesElement.textContent = photo.likes;
+    pictureCommentsCountElement.textContent = photo.comments.length;
     bigPictureElement.querySelector('.social__caption').textContent = photo.description || '';
 
     removeOldComments();
