@@ -72,7 +72,7 @@
    * @param  {string} text - текст сообщения
    */
   var onError = function (text) {
-    window.error.showFaultMessage(text);
+    window.message.showError(text);
   };
 
   window.backend.downloadData(onLoad, onError);
