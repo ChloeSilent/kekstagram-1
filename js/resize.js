@@ -47,7 +47,5 @@
   // вешаем обработчик события на панель управления масштабом
   resizeControlPanelElement.addEventListener('click', onResizeControlClick, true);
 
-  window.resize = {
-    setDefaultSize: setDefaultSize
-  };
+  window.setDefaultSize = setDefaultSize;
 })();

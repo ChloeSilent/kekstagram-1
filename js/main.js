@@ -18,8 +18,8 @@
 
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
 
-    window.resize.setDefaultSize();
-    window.effects.applyEffect(true);
+    window.setDefaultSize();
+    window.setDefaultEffectSettings(true);
   };
 
   /**
@@ -29,7 +29,7 @@
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
     uploadFileElement.value = '';
     imageUploadFormElement.reset();
-    window.validation.setSuccessInput();
+    window.setSuccessInput();
   };
 
   /**

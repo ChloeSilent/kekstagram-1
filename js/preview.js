@@ -132,8 +132,6 @@
     }
   };
 
-  window.preview = {
-    showBigPictureElement: showBigPictureElement
-  };
+  window.showBigPictureElement = showBigPictureElement;
 
 })();

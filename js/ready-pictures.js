@@ -36,7 +36,7 @@
     var fragment = document.createDocumentFragment();
     data.forEach(function (element) {
       var pictureElement = renderPictureElement(element, function (photo) {
-        window.preview.showBigPictureElement(photo);
+        window.showBigPictureElement(photo);
       });
       fragment.appendChild(pictureElement);
     });

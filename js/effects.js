@@ -66,7 +66,7 @@
    * выставляем насыщщеность эффекта на максимум; добалвяем возможность переключать фильтры
    * @param  {boolean} toDefault - ставим насыщенность эффекта и ползунок слайдера по умолчанию (на максимум) - если true)
    */
-  var applyEffect = function (toDefault) {
+  var setDefaultEffectSettings = function (toDefault) {
     document.querySelector('input[id="effect-none"]').setAttribute('checked', 'checked');
     document.querySelector('input[id="effect-heat"]').removeAttribute('checked');
 
@@ -123,7 +123,7 @@
       scaleLevelElement.style.width = (scaleLevelElement.offsetWidth - shiftX) + 'px';
 
       scaleValueElement.value = calcEffectScale();
-      applyEffect();
+      setDefaultEffectSettings();
     };
 
     /**
@@ -134,7 +134,7 @@
       upEvt.preventDefault();
 
       scaleValueElement.value = calcEffectScale();
-      applyEffect();
+      setDefaultEffectSettings();
 
       document.removeEventListener('mousemove', onScalePinControlMousemove);
       document.removeEventListener('mouseup', onScalePinControlMouseup);
@@ -148,7 +148,7 @@
    * Изменяем насыщенность эффекта при перемещении ползунка слайдера
    */
   var onEffectControlChange = function () {
-    applyEffect(true);
+    setDefaultEffectSettings(true);
   };
 
   scalePinControlElement.addEventListener('mousedown', onScalePinControlMousedown);
@@ -157,8 +157,6 @@
     control.addEventListener('change', onEffectControlChange);
   });
 
-  window.effects = {
-    applyEffect: applyEffect
-  };
+  window.setDefaultEffectSettings = setDefaultEffectSettings;
 
 })();

@@ -95,7 +95,5 @@
     }
   }, true);
 
-  window.validation = {
-    setSuccessInput: setSuccessInput
-  };
+  window.setSuccessInput = setSuccessInput;
 })();
