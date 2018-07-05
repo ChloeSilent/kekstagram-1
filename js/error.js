@@ -7,6 +7,8 @@
     SUCCESS: 'rgba(255, 204, 20, 1)'
   };
 
+  var TIMEOUT = 5000; // ms - таймаут в 5 секунд - убираем сообщения через 5 секунд
+
   /**
    * Показываем сообщения об ошибках или успехе,
    * произошедших по ходу загрузки данных с сервера или отправки данных на сервер
@@ -36,6 +38,8 @@
     document.querySelector('main').appendChild(errorBlockElement);
 
     document.addEventListener('click', hideErrorMessage);
+
+    setTimeout(hideErrorMessage, TIMEOUT);
   };
 
   /**
