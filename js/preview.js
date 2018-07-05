@@ -4,63 +4,77 @@
   var MAX_AVATARS = 6; // максимальное кол-во фоток-аватаров пользователей
   var MIN_AVATARS = 1; // мин. кол-во фоток аватаров пользователей
 
+  var MIN_COMMENTS = 5; // отображаем не более 5 комментариев
+
   var bigPictureElement = document.querySelector('.big-picture');
-  var bigPictureCancel = bigPictureElement.querySelector('.big-picture__cancel');
+  var bigPictureCancelElement = bigPictureElement.querySelector('.big-picture__cancel');
+  var loadMoreCommentsBtnElement = bigPictureElement.querySelector('.social__loadmore');
+  var shownCommentsCountElement = bigPictureElement.querySelector('.comments-shown-count');
+  var commentsListElement = bigPictureElement.querySelector('.social__comments');
+
+  var commentsData = null;
+  var shownComments = [];
 
   /**
-   * Создаем шаблон комментария
-   * @return {Node} - DOM-элемент, соответствующий комментарию
+   * Чистим разметку от старых комментариев
    */
-  var makeCommentTemplate = function () {
-    var commentElement = document.createElement('li');
-    var avatarElement = document.createElement('img');
+  var removeOldComments = function () {
 
-    commentElement.classList.add('social__comment');
-    commentElement.classList.add('social__comment--text');
-    avatarElement.classList.add('social__picture');
+    var removedComments = bigPictureElement.querySelectorAll('.social__comment');
 
-    avatarElement.width = '35';
-    avatarElement.height = '35';
-    avatarElement.alt = 'Аватар комментатора фотографии';
-
-    commentElement.appendChild(avatarElement);
-
-    return commentElement;
-  };
-
-  /**
-   * Создаем новый текстовый узел, добавляем его в DOM-элемент, соответствующий комментарию
-   * @param  {string} commentText - строка с данными, которые будут помещены в текстовый узел - текст комментария
-   * @param  {string} avatarUrl - строка с данными, которые будут помещены в текстовый узел - src аватара автора комментария
-   * @return {Node} - шаблон комментария, с дополненними данными
-   */
-  var renderComment = function (commentText, avatarUrl) {
-    var commentElement = makeCommentTemplate();
-    var avatarElement = commentElement.querySelector('.social__picture');
-
-    avatarElement.src = avatarUrl;
-    commentElement.appendChild(document.createTextNode(commentText));
-
-    return commentElement;
-  };
-
-  /**
-   * Удаляем старые комментарии из разметки, заполняем созданный выше шаблон комментария данными
-   * @param  {Object} photo - объект, который заполняем данными данных
-   */
-  var createNewComment = function (photo) {
-    var pictureCommentsList = bigPictureElement.querySelector('.social__comments');
-
-    while (pictureCommentsList.firstChild) {
-      pictureCommentsList.removeChild(pictureCommentsList.firstChild);
-    }
-
-    photo['comments'].forEach(function (comment) {
-      var commentText = comment;
-      var avatarUrl = 'img/avatar-' + window.helpers.getRandomNumber(MIN_AVATARS, MAX_AVATARS) + '.svg';
-      pictureCommentsList.appendChild(renderComment(commentText, avatarUrl));
+    removedComments.forEach(function (oldComment) {
+      commentsListElement.removeChild(oldComment);
     });
   };
+
+  /**
+   * Создаем комментарии, используя шаблон комментариев из разметки; вставляем их во фрагмент по 5
+   * @param  {Array} comments - массив комментариев к фотке
+   * @param  {integer} showCommentsNumber - количество комментариев в массиве
+   * @return {Node} - фрагмент с комментариями
+   */
+  var createComments = function (comments, showCommentsNumber) {
+
+    var fragmentComments = document.createDocumentFragment();
+
+    var numberComments = comments.length <= showCommentsNumber ? comments.length : showCommentsNumber;
+    for (var i = 0; i < numberComments; i++) {
+      var commentExample = document.querySelector('#comment').content.cloneNode(true).querySelector('li');
+      commentExample.classList.add('social__comment--text');
+      commentExample.querySelector('.social__picture').setAttribute('src', 'img/avatar-' + window.helpers.getRandomNumber(MIN_AVATARS, MAX_AVATARS) + '.svg');
+      commentExample.querySelector('.social__text').textContent = comments[i];
+      fragmentComments.appendChild(commentExample);
+      shownComments.push(commentExample);
+    }
+    return fragmentComments;
+  };
+
+  // Если показаны все комментарии - прячем кнопку, если нет - показываем
+  var showHideCommentsButton = function () {
+    if (commentsData.length - shownComments.length) {
+      loadMoreCommentsBtnElement.classList.remove('hidden');
+    } else {
+      loadMoreCommentsBtnElement.classList.add('hidden');
+    }
+  };
+
+  // Обновляем счетчик комметариев
+  var updateCommentsCount = function () {
+    shownCommentsCountElement.textContent = shownComments.length;
+  };
+
+  // Добавляем 5 новых комментариев
+  var onCommentsButtonClick = function () {
+    var notShownComments = commentsData.slice(shownComments.length);
+    if (notShownComments.length > 0) {
+      commentsListElement.appendChild(createComments(notShownComments, MIN_COMMENTS));
+    }
+    updateCommentsCount();
+    showHideCommentsButton();
+  };
+
+  // Вешаем обработчик на кнопку "загрузить еще комментарии"
+  loadMoreCommentsBtnElement.addEventListener('click', onCommentsButtonClick);
 
   /**
    * Отрисовываем полную версию фотографии с комментариями
@@ -70,22 +84,22 @@
     var pictureImage = bigPictureElement.querySelector('.big-picture__img img');
     var pictureLikes = bigPictureElement.querySelector('.likes-count');
     var pictureCommentsCount = bigPictureElement.querySelector('.comments-count');
-    var pictureFirstComment = bigPictureElement.querySelector('.social__caption');
 
+    commentsData = photo.comments;
     pictureImage.src = photo.url;
     pictureLikes.textContent = photo.likes;
     pictureCommentsCount.textContent = photo.comments.length;
-    pictureFirstComment.textContent = photo.comments[0];
+    bigPictureElement.querySelector('.social__caption').textContent = photo.description || '';
 
-    var social = bigPictureElement.querySelector('.social');
-    social.querySelector('.social__loadmore').classList.add('visually-hidden');
-
-    createNewComment(photo);
+    removeOldComments();
+    commentsListElement.appendChild(createComments(commentsData, MIN_COMMENTS));
+    updateCommentsCount();
+    showHideCommentsButton();
 
     document.querySelector('body').classList.add('modal-open');
 
     window.helpers.toggleOverlay(bigPictureElement, onBigPictureEscPress);
-    bigPictureCancel.addEventListener('click', onBigPictureCancelClick);
+    bigPictureCancelElement.addEventListener('click', onBigPictureCancelClick);
   };
 
   /**
@@ -93,9 +107,12 @@
    */
   var hideBigPictureElement = function () {
     window.helpers.toggleOverlay(bigPictureElement, onBigPictureEscPress);
-    bigPictureCancel.removeEventListener('click', onBigPictureCancelClick);
+    bigPictureCancelElement.removeEventListener('click', onBigPictureCancelClick);
 
     document.querySelector('body').classList.remove('modal-open');
+
+    commentsData = null;
+    shownComments = [];
   };
 
   /**
@@ -115,8 +132,6 @@
     }
   };
 
-  window.preview = {
-    showBigPictureElement: showBigPictureElement
-  };
+  window.showBigPictureElement = showBigPictureElement;
 
 })();

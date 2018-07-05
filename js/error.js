@@ -2,14 +2,21 @@
 
 (function () {
 
+  var Color = {
+    ERROR: 'rgba(150, 10, 24, 0.75)',
+    SUCCESS: 'rgba(255, 204, 20, 1)'
+  };
+
   /**
-   * Показываем сообщения об ошибках, произошедших по ходу загрузки данных с сервера
-   * @param  {string} err - текст ошибки
+   * Показываем сообщения об ошибках или успехе,
+   * произошедших по ходу загрузки данных с сервера или отправки данных на сервер
+   * @param  {string} text - текст сообщения
+   * @param  {string} color - цвет блока, на котором будет размещено сообщение
    */
-  var showErrorMessage = function (err) {
+  var showMessage = function (text, color) {
     var errorBlock = document.createElement('div');
     errorBlock.classList.add('error-message');
-    errorBlock.style.background = 'rgba(150, 10, 24, 0.75)';
+    errorBlock.style.background = color;
     errorBlock.style.position = 'absolute';
     errorBlock.style.zIndex = '2';
     errorBlock.style.top = '70px';
@@ -23,7 +30,7 @@
     errorText.style.fontWeight = 'bold';
     errorText.style.fontSize = '24px';
     errorText.style.margin = '20px auto';
-    errorText.textContent = err;
+    errorText.textContent = text;
 
     errorBlock.appendChild(errorText);
     document.querySelector('main').appendChild(errorBlock);
@@ -39,5 +46,14 @@
     document.removeEventListener('click', hideErrorMessage);
   };
 
-  window.showErrorMessage = showErrorMessage;
+  window.error = {
+    showFaultMessage: function (text) {
+      showMessage(text, Color.ERROR);
+    },
+
+    showSuccessMessage: function (text) {
+      showMessage(text, Color.SUCCESS);
+    }
+  };
+
 })();

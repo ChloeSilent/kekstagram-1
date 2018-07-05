@@ -3,13 +3,13 @@
 (function () {
   var SCALE_DEFAULT_VALUE = 100; // изначальный уровень применения эффекта
 
-  var effectControls = document.querySelectorAll('.effects__radio');
+  var effectControlElements = document.querySelectorAll('.effects__radio');
   var scaleElement = document.querySelector('.img-upload__scale');
   var scaleLineElement = document.querySelector('.scale__line');
   var scaleLevelElement = document.querySelector('.scale__level');
-  var scalePinControl = document.querySelector('.scale__pin');
+  var scalePinControlElement = document.querySelector('.scale__pin');
   var scaleValueElement = document.querySelector('.scale__value');
-  var imagePreviewImage = document.querySelector('.img-upload__preview img');
+  var imagePreviewElement = document.querySelector('.img-upload__preview img');
 
   // имеющиеся эффекты
   var effectsMap = {
@@ -66,7 +66,7 @@
    * выставляем насыщщеность эффекта на максимум; добалвяем возможность переключать фильтры
    * @param  {boolean} toDefault - ставим насыщенность эффекта и ползунок слайдера по умолчанию (на максимум) - если true)
    */
-  var applyEffect = function (toDefault) {
+  var setDefaultEffectSettings = function (toDefault) {
     document.querySelector('input[id="effect-none"]').setAttribute('checked', 'checked');
     document.querySelector('input[id="effect-heat"]').removeAttribute('checked');
 
@@ -82,13 +82,13 @@
       var leftPositon = scaleLineElement.getBoundingClientRect().left;
       var rightPositon = scaleLineElement.getBoundingClientRect().right;
 
-      scalePinControl.style.left = rightPositon - leftPositon + 'px';
-      scaleLevelElement.style.width = rightPositon - leftPositon - scalePinControl.offsetWidth / 2 + 'px';
+      scalePinControlElement.style.left = rightPositon - leftPositon + 'px';
+      scaleLevelElement.style.width = rightPositon - leftPositon - scalePinControlElement.offsetWidth / 2 + 'px';
       scaleValueElement.value = calcEffectScale();
     }
 
-    imagePreviewImage.className = effectsMap[currentEffect].className;
-    imagePreviewImage.style.filter = effectsMap[currentEffect].calcFilterValue(scaleValueElement.value);
+    imagePreviewElement.className = effectsMap[currentEffect].className;
+    imagePreviewElement.style.filter = effectsMap[currentEffect].calcFilterValue(scaleValueElement.value);
   };
 
   // добавляем подвижность слайдеру насыщенности эффекта
@@ -119,11 +119,11 @@
       var shiftX = startCoordX - moveEvt.clientX;
       startCoordX = moveEvt.clientX;
 
-      scalePinControl.style.left = (scalePinControl.offsetLeft - shiftX) + 'px';
+      scalePinControlElement.style.left = (scalePinControlElement.offsetLeft - shiftX) + 'px';
       scaleLevelElement.style.width = (scaleLevelElement.offsetWidth - shiftX) + 'px';
 
       scaleValueElement.value = calcEffectScale();
-      applyEffect();
+      setDefaultEffectSettings();
     };
 
     /**
@@ -134,7 +134,7 @@
       upEvt.preventDefault();
 
       scaleValueElement.value = calcEffectScale();
-      applyEffect();
+      setDefaultEffectSettings();
 
       document.removeEventListener('mousemove', onScalePinControlMousemove);
       document.removeEventListener('mouseup', onScalePinControlMouseup);
@@ -148,17 +148,15 @@
    * Изменяем насыщенность эффекта при перемещении ползунка слайдера
    */
   var onEffectControlChange = function () {
-    applyEffect(true);
+    setDefaultEffectSettings(true);
   };
 
-  scalePinControl.addEventListener('mousedown', onScalePinControlMousedown);
+  scalePinControlElement.addEventListener('mousedown', onScalePinControlMousedown);
 
-  effectControls.forEach(function (control) {
+  effectControlElements.forEach(function (control) {
     control.addEventListener('change', onEffectControlChange);
   });
 
-  window.effects = {
-    applyEffect: applyEffect
-  };
+  window.setDefaultEffectSettings = setDefaultEffectSettings;
 
 })();

@@ -5,7 +5,7 @@
   var uploadCancelElement = document.querySelector('#upload-cancel');
   var imageUploadElement = document.querySelector('.img-upload__overlay');
 
-  var imageUploadForm = document.querySelector('.img-upload__form');
+  var imageUploadFormElement = document.querySelector('.img-upload__form');
 
   /**
    * Показываем загруженный пользователем файл, ставим масштаб файла + эффект по умолчанию
@@ -18,8 +18,8 @@
 
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
 
-    window.resize.setDefaultSize();
-    window.effects.applyEffect(true);
+    window.setDefaultSize();
+    window.setDefaultEffectSettings(true);
   };
 
   /**
@@ -28,15 +28,8 @@
   var hideImageUploadElement = function () {
     window.helpers.toggleOverlay(imageUploadElement, onUploadFileEscPress);
     uploadFileElement.value = '';
-    imageUploadForm.reset();
-    window.validation.setSuccessInput();
-  };
-
-  /**
-   * Показываем блок с классом img-upload__message--error при Ошибке загрузки файла
-   */
-  var showUploadErrorBlock = function () {
-    document.querySelector('.img-upload__message--error').classList.remove('hidden');
+    imageUploadFormElement.reset();
+    window.setSuccessInput();
   };
 
   /**
@@ -78,25 +71,26 @@
     evt.preventDefault();
 
     var onLoad = function () {
-      imageUploadForm.reset();
+      imageUploadFormElement.reset();
       hideImageUploadElement();
+      window.error.showSuccessMessage('Данные успешно отправлены!');
     };
 
-    var onError = function () {
+    var onError = function (errorText) {
       hideImageUploadElement();
-      showUploadErrorBlock();
+      window.error.showFaultMessage(errorText);
     };
 
-    if (imageUploadForm.reportValidity()) {
-      var formData = new FormData(imageUploadForm);
+    if (imageUploadFormElement.reportValidity()) {
+      var formData = new FormData(imageUploadFormElement);
 
       window.backend.sendData(formData, onLoad, onError);
     }
   };
 
-  // обработчики событий
+  // вешаем обработчики событий
   uploadFileElement.addEventListener('change', onUploadFileChange);
   uploadCancelElement.addEventListener('click', onUploadCancelClick);
 
-  imageUploadForm.addEventListener('submit', onSubmitImageUplodForm);
+  imageUploadFormElement.addEventListener('submit', onSubmitImageUplodForm);
 })();
