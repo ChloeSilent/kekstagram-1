@@ -36,7 +36,7 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
+      onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс'); // выведет ошибку при неполучении данных с сервера в течение 5 секунд
     });
 
     return xhr;
