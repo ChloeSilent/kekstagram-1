@@ -3,17 +3,17 @@
 (function () {
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png']; // форматы файлов для загрузки
 
-  var imagePreview = document.querySelector('.img-upload__preview img');
-  var effectsPreviews = document.querySelectorAll('.effects__preview');
+  var imagePreviewElement = document.querySelector('.img-upload__preview img');
+  var effectsPreviewElements = document.querySelectorAll('.effects__preview');
 
   /**
-   * устанавливаем верный photoSrc для загружаемой картинки, которая хранится в imagePreview
+   * устанавливаем верный photoSrc для загружаемой картинки, которая хранится в imagePreviewElement
    * @param  {string} photoSrc - адрес загружаемого файла
    */
   var changePreviewImages = function (photoSrc) {
-    imagePreview.src = photoSrc;
+    imagePreviewElement.src = photoSrc;
 
-    effectsPreviews.forEach(function (element) {
+    effectsPreviewElements.forEach(function (element) {
       element.style.backgroundImage = 'url(' + photoSrc + ')';
     });
   };

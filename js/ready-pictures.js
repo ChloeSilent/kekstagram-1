@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  var picturesList = document.querySelector('.pictures'); // место для отрисовки сгенерированных фоток
-  var photoTemplate = document.querySelector('#picture').content.querySelector('.picture__link'); // шаблон, из которого мы берем прототип нашей фотки
+  var picturesListElement = document.querySelector('.pictures'); // место для отрисовки сгенерированных фоток
+  var photoTemplateElement = document.querySelector('#picture').content.querySelector('.picture__link'); // шаблон, из которого мы берем прототип нашей фотки
 
   /**
    * Создаем DOM-элементы для фоток, заполняем их данными
@@ -11,7 +11,7 @@
    * @return {Object} - обьект с заполненными данными
    */
   var renderPictureElement = function (photo, cb) {
-    var pictureElement = photoTemplate.cloneNode(true);
+    var pictureElement = photoTemplateElement.cloneNode(true);
 
     var pictureImage = pictureElement.querySelector('.picture__img');
     var pictureLikes = pictureElement.querySelector('.picture__stat--likes');
@@ -55,7 +55,7 @@
       link.parentNode.removeChild(link);
     });
 
-    picturesList.appendChild(photosFragment);
+    picturesListElement.appendChild(photosFragment);
   };
 
   /**

@@ -9,8 +9,8 @@
 
   var ACTIVE_CLASS = 'img-filters__button--active';
 
-  var sortsBlock = document.querySelector('.img-filters');
-  var sortsControls = sortsBlock.querySelectorAll('.img-filters__button');
+  var sortsBlockElement = document.querySelector('.img-filters');
+  var sortsControlElements = sortsBlockElement.querySelectorAll('.img-filters__button');
 
   // фильтры для фоток (Популярные — фотографии в изначальном порядке.
   // Новые — 10 случайных, не повторяющихся фотографий.
@@ -36,7 +36,7 @@
    * @param  {cb} cb - функция-коллбэк, переключает фильтры по активному классу
    */
   var sortPhotos = function (data, cb) {
-    var sortName = sortsBlock.querySelector('.' + ACTIVE_CLASS).id;
+    var sortName = sortsBlockElement.querySelector('.' + ACTIVE_CLASS).id;
     var result = SortFunctions[sortName](data.slice());
     cb(result);
   };
@@ -45,7 +45,7 @@
    * Удаляем класс active
    */
   var clearActivity = function () {
-    sortsControls.forEach(function (item) {
+    sortsControlElements.forEach(function (item) {
       item.classList.remove(ACTIVE_CLASS);
     });
   };
@@ -56,9 +56,9 @@
    * @param  {cb} cb - функция-коллбэк
    */
   var showSorts = function (data, cb) {
-    sortsBlock.classList.remove('img-filters--inactive');
+    sortsBlockElement.classList.remove('img-filters--inactive');
 
-    sortsControls.forEach(function (item) {
+    sortsControlElements.forEach(function (item) {
       item.addEventListener('click', function (evt) {
         evt.preventDefault();
         if (evt.target.classList.contains(ACTIVE_CLASS)) {
