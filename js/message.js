@@ -50,12 +50,12 @@
     document.removeEventListener('click', hideErrorMessage);
   };
 
-  window.error = {
-    showFaultMessage: function (text) {
+  window.message = {
+    showError: function (text) {
       showMessage(text, Color.ERROR);
     },
 
-    showSuccessMessage: function (text) {
+    showSuccess: function (text) {
       showMessage(text, Color.SUCCESS);
     }
   };

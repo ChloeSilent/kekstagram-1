@@ -73,12 +73,12 @@
     var onLoad = function () {
       imageUploadFormElement.reset();
       hideImageUploadElement();
-      window.error.showSuccessMessage('Данные успешно отправлены!');
+      window.message.showSuccess('Данные успешно отправлены!');
     };
 
     var onError = function (errorText) {
       hideImageUploadElement();
-      window.error.showFaultMessage(errorText);
+      window.message.showError(errorText);
     };
 
     if (imageUploadFormElement.reportValidity()) {
