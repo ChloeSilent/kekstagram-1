@@ -14,26 +14,26 @@
    * @param  {string} color - цвет блока, на котором будет размещено сообщение
    */
   var showMessage = function (text, color) {
-    var errorBlock = document.createElement('div');
-    errorBlock.classList.add('error-message');
-    errorBlock.style.background = color;
-    errorBlock.style.position = 'absolute';
-    errorBlock.style.zIndex = '2';
-    errorBlock.style.top = '70px';
-    errorBlock.style.left = '50%';
-    errorBlock.style.transform = 'translateX(-50%)';
-    errorBlock.style.display = 'flex';
-    errorBlock.style.width = '80%';
+    var errorBlockElement = document.createElement('div');
+    errorBlockElement.classList.add('error-message');
+    errorBlockElement.style.background = color;
+    errorBlockElement.style.position = 'absolute';
+    errorBlockElement.style.zIndex = '2';
+    errorBlockElement.style.top = '70px';
+    errorBlockElement.style.left = '50%';
+    errorBlockElement.style.transform = 'translateX(-50%)';
+    errorBlockElement.style.display = 'flex';
+    errorBlockElement.style.width = '80%';
 
-    var errorText = document.createElement('p');
-    errorText.style.color = 'rgba(250, 248, 255, 1)';
-    errorText.style.fontWeight = 'bold';
-    errorText.style.fontSize = '24px';
-    errorText.style.margin = '20px auto';
-    errorText.textContent = text;
+    var errorTextElement = document.createElement('p');
+    errorTextElement.style.color = 'rgba(250, 248, 255, 1)';
+    errorTextElement.style.fontWeight = 'bold';
+    errorTextElement.style.fontSize = '24px';
+    errorTextElement.style.margin = '20px auto';
+    errorTextElement.textContent = text;
 
-    errorBlock.appendChild(errorText);
-    document.querySelector('main').appendChild(errorBlock);
+    errorBlockElement.appendChild(errorTextElement);
+    document.querySelector('main').appendChild(errorBlockElement);
 
     document.addEventListener('click', hideErrorMessage);
   };
