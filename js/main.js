@@ -33,13 +33,6 @@
   };
 
   /**
-   * Показываем блок с классом img-upload__message--error при Ошибке загрузки файла
-   */
-  var showUploadErrorBlock = function () {
-    document.querySelector('.img-upload__message--error').classList.remove('hidden');
-  };
-
-  /**
    * Показываем popup загрузки нового файла
    */
   var onUploadFileChange = function () {
@@ -80,11 +73,12 @@
     var onLoad = function () {
       imageUploadFormElement.reset();
       hideImageUploadElement();
+      window.error.showSuccessMessage('Данные успешно отправлены!');
     };
 
-    var onError = function () {
+    var onError = function (errorText) {
       hideImageUploadElement();
-      showUploadErrorBlock();
+      window.error.showFaultMessage(errorText);
     };
 
     if (imageUploadFormElement.reportValidity()) {
@@ -94,7 +88,7 @@
     }
   };
 
-  // обработчики событий
+  // вешаем обработчики событий
   uploadFileElement.addEventListener('change', onUploadFileChange);
   uploadCancelElement.addEventListener('click', onUploadCancelClick);
 

@@ -69,10 +69,10 @@
 
   /**
    * В случае провала загрузки данных - показываем сообщение об ошибке
-   * @param  {string} err - текст сообщения
+   * @param  {string} text - текст сообщения
    */
-  var onError = function (err) {
-    window.showErrorMessage(err);
+  var onError = function (text) {
+    window.error.showFaultMessage(text);
   };
 
   window.backend.downloadData(onLoad, onError);
