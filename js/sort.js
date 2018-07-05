@@ -2,12 +2,12 @@
 
 (function () {
 
+  var ACTIVE_CLASS = 'img-filters__button--active';
+
   var NewPhotos = {
     MIN: 0,
     MAX: 10
   }; // 10 случайных, не повторяющихся фотографий
-
-  var ACTIVE_CLASS = 'img-filters__button--active';
 
   var sortsBlockElement = document.querySelector('.img-filters');
   var sortsControlElements = sortsBlockElement.querySelectorAll('.img-filters__button');

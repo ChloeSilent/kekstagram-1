@@ -13,13 +13,13 @@
   var renderPictureElement = function (photo, cb) {
     var pictureElement = photoTemplateElement.cloneNode(true);
 
-    var pictureImage = pictureElement.querySelector('.picture__img');
-    var pictureLikes = pictureElement.querySelector('.picture__stat--likes');
-    var pictureComments = pictureElement.querySelector('.picture__stat--comments');
+    var pictureImageElement = pictureElement.querySelector('.picture__img');
+    var pictureLikesElement = pictureElement.querySelector('.picture__stat--likes');
+    var pictureCommentsElement = pictureElement.querySelector('.picture__stat--comments');
 
-    pictureImage.src = photo.url;
-    pictureLikes.textContent = photo.likes;
-    pictureComments.textContent = photo.comments.length;
+    pictureImageElement.src = photo.url;
+    pictureLikesElement.textContent = photo.likes;
+    pictureCommentsElement.textContent = photo.comments.length;
     pictureElement.addEventListener('click', function (evt) {
       evt.preventDefault();
       cb(photo);
