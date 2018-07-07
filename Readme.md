@@ -9,5 +9,5 @@
 
 _Основы JS, Валидация, шаблонизация, обработчики событий, работа с сетью, дебаунс_
 
-[travis-image]: https://travis-ci.org/Manimall/544023-kekstagram.svg?branch=master
-[travis-url]: https://travis-ci.org/Manimall/544023-kekstagram
+[travis-image]: https://travis-ci.org/Manimall/kekstagram.svg?branch=master
+[travis-url]: https://travis-ci.org/Manimall/kekstagram
